@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Clinical Scenario 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a1a2e;
+    --deep: #16213e;
+    --blue-dark: #0f3460;
+    --red: #c0392b;
+    --red-light: #e74c3c;
+    --cream: #f8f5f0;
+    --white: #ffffff;
+    --text: #1e1e2e;
+    --muted: #6b7280;
+  }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--deep) 55%, var(--blue-dark) 100%);
+    color: #fff;
+    padding: 2.5rem 2rem 2rem;
+    border-bottom: 4px solid var(--red-light);
+  }
+  .header-inner { max-width: 920px; margin: 0 auto; }
+  .header-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--red-light);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header p {
+    margin-top: 0.4rem;
+    color: #a8c4e0;
+    font-style: italic;
+    font-size: 1rem;
+  }
+  .tags { margin-top: 1rem; display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .tag {
+    background: rgba(231,76,60,0.15);
+    border: 1px solid rgba(231,76,60,0.45);
+    color: #e8a598;
+    font-size: 0.68rem;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    letter-spacing: 0.1em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── MAIN WRAPPER ── */
+  main { max-width: 920px; margin: 0 auto; padding: 1.8rem 1rem 4rem; }
+
+  /* ── NAV TABS ── */
+  .tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.6rem; }
+  .tab-btn {
+    background: var(--white);
+    color: #444;
+    border: 2px solid #ddd;
+    padding: 0.45rem 1rem;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+  }
+  .tab-btn:hover { border-color: var(--accent); }
+  .tab-btn.active {
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 3px 12px var(--shadow);
+  }
+
+  /* ── CONTENT CARD ── */
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 4px 28px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 3px solid var(--card-border);
+  }
+  .card-header {
+    padding: 1.5rem 1.8rem;
+    color: #fff;
+  }
+  .card-header .icon { font-size: 2rem; margin-bottom: 0.35rem; }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .card-header p { margin-top: 0.3rem; opacity: 0.88; font-style: italic; font-size: 0.9rem; }
+
+  .card-body { padding: 1.5rem 1.8rem; }
+
+  /* ── ACCORDION ITEMS ── */
+  .acc-item {
+    margin-bottom: 0.9rem;
+    border-radius: 0 10px 10px 0;
+    border-left: 4px solid var(--accent);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .acc-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+  .acc-header {
+    background: var(--acc-bg);
+    padding: 0.95rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .acc-header h3 {
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .acc-toggle {
+    font-size: 0.75rem;
+    color: #999;
+    font-family: 'JetBrains Mono', monospace;
+    transition: transform 0.2s;
+  }
+  .acc-body {
+    display: none;
+    background: #fff;
+    padding: 0.85rem 1.2rem 1rem;
+    border-top: 1px solid var(--acc-border);
+  }
+  .acc-body.open { display: block; }
+  .acc-body p {
+    font-size: 0.93rem;
+    line-height: 1.8;
+    color: #2c2c2c;
+    margin-bottom: 0.4rem;
+  }
+  .acc-hint {
+    text-align: right;
+    font-size: 0.72rem;
+    color: #bbb;
+    font-style: italic;
+    margin-top: 0.2rem;
+  }
+
+  /* ── BONUS BOXES ── */
+  .bonus-box {
+    margin-top: 1.3rem;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    display: none;
+  }
+  .bonus-box.visible { display: block; }
+  .bonus-box-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 0.8rem;
+  }
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    gap: 0.7rem;
+  }
+  .grid-card {
+    background: var(--white);
+    border-radius: 9px;
+    padding: 0.8rem 1rem;
+  }
+  .grid-card .gc-title { font-weight: 700; font-size: 0.83rem; }
+  .grid-card .gc-desc  { font-size: 0.78rem; color: #666; margin-top: 0.2rem; }
+
+  /* ── BONUS: Triad box ── */
+  .triad-box {
+    background: #fff8e1;
+    border: 2px solid #f39c12;
+  }
+  .triad-box .bonus-box-title { color: #d35400; }
+  .triad-box .grid-card { border: 1px solid #f39c1233; }
+  .triad-box .grid-card .gc-title { color: #d35400; }
+
+  /* ── BONUS: Vein box ── */
+  .vein-box {
+    background: #e8f4fd;
+    border: 2px solid #2980b9;
+  }
+  .vein-box .bonus-box-title { color: #1a6fa3; }
+  .vein-box .grid-card { border: 1px solid #2980b922; }
+  .vein-box .grid-card .gc-title { color: #1a6fa3; }
+  .vein-box .grid-card .gc-desc { color: #555; }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: 0.73rem;
+    color: #bbb;
+    font-style: italic;
+    padding-bottom: 1rem;
+  }
+
+  @media (max-width: 520px) {
+    .card-body { padding: 1.1rem; }
+    .card-header { padding: 1.1rem; }
+    main { padding: 1.2rem 0.6rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-label">Clinical Case Scenario · Surgery · Breast Disease</div>
+    <h1>Mondor's Disease</h1>
+    <p>Superficial Thrombophlebitis of the Breast &amp; Anterior Chest Wall</p>
+    <div class="tags">
+      <span class="tag">Benign Breast Disease</span>
+      <span class="tag">Vascular</span>
+      <span class="tag">Self-Limiting</span>
+      <span class="tag">Surgery OPD</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- NAV TABS -->
+  <div class="tabs" id="tabs"></div>
+
+  <!-- CARD -->
+  <div class="card" id="card">
+    <div class="card-header" id="card-header">
+      <div class="icon" id="card-icon"></div>
+      <h2 id="card-title"></h2>
+      <p id="card-subtitle"></p>
+    </div>
+    <div class="card-body" id="card-body"></div>
+  </div>
+
+  <!-- BONUS BOXES -->
+  <div class="bonus-box triad-box" id="box-triad">
+    <div class="bonus-box-title">⚠️ Examiner's Favourite: The Mondor's Triad</div>
+    <div class="grid-cards">
+      <div class="grid-card">
+        <div class="gc-title">Cord-like Induration</div>
+        <div class="gc-desc">Firm, tender, subcutaneous fibrous cord</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Groove Sign</div>
+        <div class="gc-desc">Linear skin depression along the cord</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Accentuation on Arm Elevation</div>
+        <div class="gc-desc">Cord becomes tense &amp; more prominent</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bonus-box vein-box" id="box-veins">
+    <div class="bonus-box-title">📌 Veins Involved in Mondor's Disease</div>
+    <div class="grid-cards">
+      <div class="grid-card">
+        <div class="gc-title">Thoracoepigastric Vein</div>
+        <div class="gc-desc">Most common</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Lateral Thoracic Vein</div>
+        <div class="gc-desc">Common</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Superficial Epigastric Vein</div>
+        <div class="gc-desc">Less common</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Superficial Circumflex Iliac Vein</div>
+        <div class="gc-desc">Rare</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Clinical Scenario for Educational Purposes · Mondor's Disease · Henri Mondor (1885–1962)</footer>
+</main>
+
+<script>
+const sections = [
+  { id:"presentation", label:"Chief Complaint", icon:"🩺", color:"#c0392b", shadow:"rgba(192,57,43,0.35)" },
+  { id:"history",      label:"History",         icon:"📋", color:"#2980b9", shadow:"rgba(41,128,185,0.35)" },
+  { id:"examination",  label:"Examination",     icon:"🔍", color:"#27ae60", shadow:"rgba(39,174,96,0.35)"  },
+  { id:"investigations",label:"Investigations", icon:"🧪", color:"#8e44ad", shadow:"rgba(142,68,173,0.35)" },
+  { id:"diagnosis",    label:"Diagnosis",       icon:"💡", color:"#d35400", shadow:"rgba(211,84,0,0.35)"   },
+  { id:"management",   label:"Management",      icon:"💊", color:"#16a085", shadow:"rgba(22,160,133,0.35)" },
+  { id:"discussion",   label:"Key Points",      icon:"📖", color:"#2c3e50", shadow:"rgba(44,62,80,0.35)"   },
+];
+
+const content = {
+  presentation: {
+    title: "Chief Complaint & Presentation",
+    subtitle: "A 38-year-old woman presents to the Surgical OPD",
+    items: [
+      { heading: "Patient Profile",
+        text: "Mrs. Sarah K., 38-year-old female, presents with a painful cord-like thickening on the right breast of 5 days duration." },
+      { heading: "Complaint",
+        text: 'She noticed a "tight, rope-like" structure running from the lower outer quadrant of her right breast toward the axilla. The area is tender to touch. She is alarmed and worried about breast cancer.' },
+      { heading: "Onset",
+        text: "Symptoms began 5 days ago, approximately 10 days after undergoing a right breast biopsy (excisional) for a benign fibroadenoma." },
+    ]
+  },
+  history: {
+    title: "History Taking",
+    subtitle: "Eliciting a thorough clinical history",
+    items: [
+      { heading: "History of Present Illness",
+        text: "The cord appeared suddenly and has been associated with dull, aching pain worsened on arm movement and breast palpation. No fever, no nipple discharge, no skin discoloration. No palpable lump." },
+      { heading: "Past Medical History",
+        text: "Excisional biopsy of right breast 10 days ago (histology: fibroadenoma). No history of trauma, infection, or malignancy." },
+      { heading: "Menstrual & Obstetric History",
+        text: "Regular cycles. G2P2. Breastfed both children. Currently not lactating." },
+      { heading: "Drug & Social History",
+        text: "No oral contraceptives. Non-smoker. Occasional alcohol. No family history of breast cancer." },
+    ]
+  },
+  examination: {
+    title: "Physical Examination",
+    subtitle: "Systematic clinical evaluation",
+    items: [
+      { heading: "General",
+        text: "Well-nourished, anxious female. Vitals stable. Afebrile." },
+      { heading: "Breast Examination — Inspection",
+        text: "Right breast: Visible subcutaneous linear depression running from the lower outer quadrant toward the axilla, forming a groove with arm elevation — the classic 'groove sign.' Skin dimpling along the cord. No erythema, no peau d'orange, no nipple retraction." },
+      { heading: "Breast Examination — Palpation",
+        text: "A firm, tender, cord-like induration (~8 cm) is palpable in the right breast extending toward the axillary tail. The cord does not cross the midline. No discrete lump. No axillary lymphadenopathy. Left breast normal." },
+      { heading: "Key Clinical Sign",
+        text: "The cord becomes more prominent and tense on raising the ipsilateral arm — pathognomonic of Mondor's Disease." },
+    ]
+  },
+  investigations: {
+    title: "Investigations",
+    subtitle: "Workup to confirm diagnosis and exclude malignancy",
+    items: [
+      { heading: "Ultrasound Breast (Right)",
+        text: "A tubular, anechoic, non-compressible subcutaneous structure is identified in the course of the palpable cord, consistent with thrombophlebitis of a superficial vein (thoracoepigastric vein). No underlying mass. No lymphadenopathy." },
+      { heading: "Mammography",
+        text: "No suspicious masses, microcalcifications, or architectural distortion. Subtle linear shadow along the cord. Normal for age." },
+      { heading: "Doppler Ultrasound",
+        text: "Absence of flow within the affected venous segment, confirming thrombosis. Adjacent veins patent." },
+      { heading: "Blood Tests",
+        text: "CBC, ESR, CRP — mildly elevated CRP (non-specific). Coagulation profile normal. No thrombophilia screen indicated at this stage." },
+      { heading: "Biopsy",
+        text: "NOT required. Diagnosis is clinical and radiological. Biopsy is only considered if underlying malignancy is strongly suspected despite imaging." },
+    ]
+  },
+  diagnosis: {
+    title: "Diagnosis",
+    subtitle: "Mondor's Disease — Superficial Thrombophlebitis of the Breast",
+    items: [
+      { heading: "Confirmed Diagnosis",
+        text: "Mondor's Disease: Thrombophlebitis of the superficial veins of the breast and anterior chest wall. Named after Henri Mondor (1885–1962), French surgeon who described it in 1939." },
+      { heading: "Affected Vein",
+        text: "Most commonly the thoracoepigastric vein, followed by the lateral thoracic vein and superficial epigastric vein." },
+      { heading: "Precipitating Factor",
+        text: "Recent breast surgery (excisional biopsy) — the most common identifiable cause in clinical practice." },
+      { heading: "Differential Diagnoses (Excluded)",
+        text: "1. Breast carcinoma with lymphatic invasion (no mass, benign imaging)\n2. Cellulitis (no erythema, afebrile)\n3. Fat necrosis (no ecchymosis, post-surgery with cord formation)\n4. Inflammatory breast cancer (no peau d'orange, no mass, normal mammogram)" },
+    ]
+  },
+  management: {
+    title: "Management",
+    subtitle: "Conservative approach — self-limiting condition",
+    items: [
+      { heading: "Patient Reassurance",
+        text: "Crucial first step. Explain the benign, self-limiting nature of the condition. Reassure that this is NOT cancer. Most cases resolve spontaneously within 6–8 weeks." },
+      { heading: "Analgesia",
+        text: "NSAIDs (e.g., Ibuprofen 400 mg TID with food) for 2–3 weeks — both analgesic and anti-inflammatory. Topical diclofenac gel over the cord twice daily." },
+      { heading: "Supportive Measures",
+        text: "Well-fitting supportive bra. Warm compresses to the affected area. Gentle arm movements to prevent stiffness. Avoid strenuous ipsilateral arm activity." },
+      { heading: "Anticoagulation",
+        text: "Not routinely required. No risk of deep vein thrombosis extension. Consider only if extensive thrombosis or underlying thrombophilia is identified." },
+      { heading: "Follow-Up",
+        text: "Review at 6–8 weeks. Resolution expected. If persistent beyond 3 months or new symptoms arise, repeat imaging and consider biopsy to rule out occult malignancy (rare association)." },
+      { heading: "Surgical Intervention",
+        text: "Not indicated. Surgery reserved only for refractory cases causing severe, debilitating pain unresponsive to conservative measures." },
+    ]
+  },
+  discussion: {
+    title: "Clinical Pearls & Key Points",
+    subtitle: "What every clinician must know",
+    items: [
+      { heading: "Etiology & Risk Factors",
+        text: "Causes: breast surgery/biopsy, trauma, vigorous exercise, ill-fitting bras, breast implants, local infection, and rarely occult breast carcinoma (~1%). Idiopathic in ~50% of cases." },
+      { heading: "Pathophysiology",
+        text: "Local inflammation of the superficial vein wall → thrombosis → fibrosis of the vein and surrounding connective tissue → cord-like induration with overlying skin tethering." },
+      { heading: "Pathognomonic Sign",
+        text: "The 'groove sign' — a linear skin depression along the cord, accentuated by arm elevation. This is highly specific for Mondor's Disease." },
+      { heading: "Oncological Vigilance",
+        text: "Although benign, Mondor's Disease has a rare but documented association with underlying breast carcinoma. Always perform bilateral breast examination and imaging to exclude malignancy, especially in cases without an obvious precipitating cause." },
+      { heading: "Prognosis",
+        text: "Excellent. Spontaneous resolution in 6–8 weeks in the vast majority of patients. Recurrence is uncommon." },
+    ]
+  },
+};
+
+let activeId = "presentation";
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function buildTabs() {
+  const container = document.getElementById("tabs");
+  container.innerHTML = "";
+  sections.forEach(s => {
+    const btn = document.createElement("button");
+    btn.className = "tab-btn" + (s.id === activeId ? " active" : "");
+    btn.style.setProperty("--accent", s.color);
+    btn.style.setProperty("--shadow", s.shadow);
+    if (s.id === activeId) {
+      btn.style.background = s.color;
+      btn.style.borderColor = s.color;
+      btn.style.boxShadow = `0 3px 12px ${s.shadow}`;
+    }
+    btn.innerHTML = `<span>${s.icon}</span> ${s.label}`;
+    btn.addEventListener("click", () => { activeId = s.id; render(); });
+    container.appendChild(btn);
+  });
+}
+
+function buildCard() {
+  const sec   = sections.find(s => s.id === activeId);
+  const data  = content[activeId];
+  const color = sec.color;
+  const accBg = hexToRgba(color, 0.07);
+  const accBorder = hexToRgba(color, 0.18);
+  const cardBorder = hexToRgba(color, 0.15);
+
+  // Card border
+  document.getElementById("card").style.borderColor = cardBorder;
+
+  // CSS variables for accordion
+  document.documentElement.style.setProperty("--accent",     color);
+  document.documentElement.style.setProperty("--acc-bg",     accBg);
+  document.documentElement.style.setProperty("--acc-border", accBorder);
+
+  // Header
+  const hdr = document.getElementById("card-header");
+  hdr.style.background = `linear-gradient(135deg, ${color}ee, ${color}99)`;
+  document.getElementById("card-icon").textContent    = sec.icon;
+  document.getElementById("card-title").textContent   = data.title;
+  document.getElementById("card-subtitle").textContent = data.subtitle;
+
+  // Body
+  const body = document.getElementById("card-body");
+  body.innerHTML = "";
+  data.items.forEach((item, i) => {
+    const acc = document.createElement("div");
+    acc.className = "acc-item";
+
+    const hd = document.createElement("div");
+    hd.className = "acc-header";
+    hd.innerHTML = `<h3>${item.heading}</h3><span class="acc-toggle">▼ show</span>`;
+
+    const bd = document.createElement("div");
+    bd.className = "acc-body";
+    item.text.split("\n").forEach(line => {
+      const p = document.createElement("p");
+      p.textContent = line;
+      bd.appendChild(p);
+    });
+
+    hd.addEventListener("click", () => {
+      const open = bd.classList.toggle("open");
+      hd.querySelector(".acc-toggle").textContent = open ? "▲ hide" : "▼ show";
+    });
+
+    acc.appendChild(hd);
+    acc.appendChild(bd);
+    body.appendChild(acc);
+  });
+
+  const hint = document.createElement("div");
+  hint.className = "acc-hint";
+  hint.textContent = "Click each card to reveal / hide content";
+  body.appendChild(hint);
+
+  // Bonus boxes
+  document.getElementById("box-triad").classList.toggle("visible", activeId === "diagnosis");
+  document.getElementById("box-veins").classList.toggle("visible", activeId === "discussion");
+}
+
+function render() {
+  buildTabs();
+  buildCard();
+}
+
+render();
+</script>
+</body>
+</html>
