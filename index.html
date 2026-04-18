@@ -74,6 +74,7 @@
   <nav>
     <a class="nav-brand" href="#">N Med Ed</a>
     <ul class="nav-links">
+      <li><a href="#qod">Question of the Day</a></li>
       <li><a href="#contents">Contents</a></li>
       <li><a href="#about">About</a></li>
     </ul>
@@ -90,7 +91,37 @@
   </header>
 
   <main class="container" id="main-content">
-
+<!-- QUESTION OF THE DAY -->
+    <section class="qod-section" id="qod" aria-labelledby="qod-heading">
+      <div class="section-header">
+        <span class="section-label">Daily</span>
+        <h2 class="section-title" id="qod-heading">Question of the Day</h2>
+      </div>
+      <div class="qod-card">
+        <div class="qod-card-header">
+          <div class="qod-card-header-left">
+            <span class="qod-header-label">Question of the Day</span>
+            <span class="qod-topic-badge" id="qod-topic"></span>
+          </div>
+          <span class="qod-date" id="qod-date"></span>
+        </div>
+        <div class="qod-body">
+          <p class="qod-question" id="qod-question"></p>
+          <div class="qod-options" id="qod-options" role="list"></div>
+          <button class="qod-reveal-btn" id="qod-reveal-btn" style="display:none">
+            Show Explanation
+          </button>
+          <div class="qod-explanation" id="qod-explanation">
+            <div class="qod-explanation-label">Explanation</div>
+            <p class="qod-explanation-text" id="qod-explanation-text"></p>
+          </div>
+        </div>
+        <div class="qod-footer">
+          <span class="qod-counter">Question <span id="qod-num"></span> of <span id="qod-total"></span></span>
+          <span class="qod-date" style="font-size:0.72rem;color:var(--text-muted)">Resets daily at midnight</span>
+        </div>
+      </div>
+    </section>
     <section class="section" id="contents" aria-labelledby="contents-heading">
       <div class="section-header">
         <span class="section-label">Index</span>
@@ -195,6 +226,197 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+    // ── QUESTION BANK ──────────────────────────────────────────────────────────
+    const questions = [
+      {
+        topic: "Cardiology",
+        q: "A 55-year-old man presents with crushing chest pain radiating to the left arm, diaphoresis, and nausea for 90 minutes. ECG shows ST elevation in leads II, III, and aVF. Which coronary artery is most likely occluded?",
+        options: ["Left anterior descending artery", "Right coronary artery", "Left circumflex artery", "Left main coronary artery"],
+        answer: 1,
+        explanation: "ST elevation in leads II, III, and aVF indicates an inferior STEMI. The inferior wall of the left ventricle is supplied by the right coronary artery (RCA) in ~80% of people (right-dominant circulation). Prompt reperfusion is key."
+      },
+      {
+        topic: "Respiratory",
+        q: "A 30-year-old woman presents with progressive dyspnoea, dry cough, and bilateral hilar lymphadenopathy on CXR. Serum ACE is elevated. Which cell type forms the characteristic lesion in this condition?",
+        options: ["Neutrophils", "Eosinophils", "Epithelioid macrophages", "Mast cells"],
+        answer: 2,
+        explanation: "This presentation is consistent with sarcoidosis. The hallmark lesion is a non-caseating granuloma composed primarily of epithelioid macrophages (histiocytes) fused into giant cells. Serum ACE is elevated in ~60% of active cases."
+      },
+      {
+        topic: "Neurology",
+        q: "A 70-year-old hypertensive man suddenly develops weakness of the right face, arm, and leg with slurred speech. MRI shows a lacunar infarct. In which anatomical location is the infarct most likely?",
+        options: ["Internal capsule (posterior limb)", "Cerebellum", "Occipital cortex", "Caudate nucleus"],
+        answer: 0,
+        explanation: "A pure motor hemiplegia affecting the face, arm, and leg equally is the classic presentation of a posterior limb of internal capsule lacunar infarct, where corticospinal fibres run in close proximity. Small vessel disease from hypertension is the most common cause."
+      },
+      {
+        topic: "Pharmacology",
+        q: "A 62-year-old woman with type 2 diabetes and heart failure with reduced ejection fraction is started on a new medication. Which drug class has demonstrated both glycaemic benefit and significant reduction in cardiovascular mortality in this patient group?",
+        options: ["Sulfonylureas", "SGLT-2 inhibitors", "DPP-4 inhibitors", "Thiazolidinediones"],
+        answer: 1,
+        explanation: "SGLT-2 inhibitors (e.g., dapagliflozin, empagliflozin) reduce HbA1c and have landmark evidence for reducing hospitalisation for heart failure and cardiovascular death. They are now guideline-recommended for HFrEF regardless of diabetic status."
+      },
+      {
+        topic: "Gastroenterology",
+        q: "A 45-year-old man with chronic alcohol use presents with haematemesis. Endoscopy reveals tortuous dilated veins at the gastro-oesophageal junction. What is the underlying pathophysiological mechanism?",
+        options: ["Increased cardiac output", "Portal hypertension causing portosystemic shunting", "Aortic dissection", "Mallory-Weiss tear"],
+        answer: 1,
+        explanation: "Oesophageal varices arise from portal hypertension, typically due to liver cirrhosis. Elevated portal venous pressure opens portosystemic collaterals at the gastro-oesophageal junction. Rupture carries a 20–30% mortality per episode."
+      },
+      {
+        topic: "Endocrinology",
+        q: "A 28-year-old woman presents with weight gain, a rounded face, easy bruising, and purple striae. 24-hour urinary free cortisol is markedly elevated. Which investigation best distinguishes a pituitary source from an adrenal source?",
+        options: ["Random serum cortisol", "High-dose dexamethasone suppression test", "Thyroid function tests", "Serum aldosterone"],
+        answer: 1,
+        explanation: "In Cushing's disease (pituitary ACTH excess), high-dose dexamethasone (2 mg QDS × 2 days) suppresses cortisol by >50%. In adrenal adenoma/carcinoma, cortisol is not suppressed as the tumour functions autonomously. Inferior petrosal sinus sampling is the gold standard."
+      },
+      {
+        topic: "Haematology",
+        q: "A 25-year-old woman presents with fatigue and pallor. Blood film shows hypochromic microcytic red cells. Serum ferritin is low. Which is the most appropriate first-line treatment?",
+        options: ["Blood transfusion", "Oral ferrous sulphate", "Intramuscular vitamin B12", "Folic acid supplementation"],
+        answer: 1,
+        explanation: "Iron deficiency anaemia is treated with oral ferrous sulphate (200 mg three times daily). It is cheap, effective, and should be continued for 3 months after haemoglobin normalises to replenish stores. The underlying cause must also be identified and treated."
+      },
+      {
+        topic: "Renal",
+        q: "A 60-year-old diabetic man has proteinuria of 3.5 g/day, hypoalbuminaemia, peripheral oedema, and hyperlipidaemia. What is this syndrome called, and which structure is primarily damaged?",
+        options: ["Nephritic syndrome — glomerular endothelium", "Nephrotic syndrome — glomerular basement membrane/podocytes", "Acute tubular necrosis — proximal tubule", "Renal artery stenosis — afferent arteriole"],
+        answer: 1,
+        explanation: "Nephrotic syndrome is defined by heavy proteinuria (>3.5 g/day), hypoalbuminaemia, oedema, and hyperlipidaemia. Damage to the glomerular basement membrane and podocytes increases permeability to albumin. In diabetics, diabetic nephropathy is the most common cause."
+      },
+      {
+        topic: "Infectious Disease",
+        q: "A 22-year-old student returns from Sub-Saharan Africa with fever, rigors, and headache. A thick and thin blood film is performed. Which species of Plasmodium is associated with the highest mortality?",
+        options: ["Plasmodium vivax", "Plasmodium ovale", "Plasmodium malariae", "Plasmodium falciparum"],
+        answer: 3,
+        explanation: "P. falciparum causes the most severe and potentially fatal form of malaria due to its ability to infect red cells of any age, causing high parasitaemia, cerebral malaria, ARDS, and multi-organ failure. Artemisinin-based combination therapy is first-line treatment."
+      },
+      {
+        topic: "Dermatology",
+        q: "A 35-year-old man presents with an annular erythematous rash with central clearing following a camping trip. He recalls a tick bite 10 days ago. What is the most likely diagnosis?",
+        options: ["Tinea corporis", "Lyme disease (erythema migrans)", "Psoriasis", "Cellulitis"],
+        answer: 1,
+        explanation: "Erythema migrans — a slowly expanding annular rash with central clearing — is pathognomonic of early localised Lyme disease caused by Borrelia burgdorferi. Transmitted by Ixodes ticks, it is treated with doxycycline for 14–21 days."
+      },
+      {
+        topic: "Obstetrics",
+        q: "A 32-year-old woman at 36 weeks gestation presents with sudden-onset severe headache, blurred vision, and BP of 168/112 mmHg. Urinalysis shows 3+ proteinuria. What is the most important immediate step?",
+        options: ["Reassure and discharge home", "Administer antihypertensives and consider delivery", "Perform lumbar puncture", "Start oral hydration"],
+        answer: 1,
+        explanation: "This is severe pre-eclampsia. Immediate management includes IV labetalol or hydralazine to reduce BP, IV magnesium sulphate for seizure prophylaxis (eclampsia prevention), and planning for urgent delivery — the only definitive treatment."
+      },
+      {
+        topic: "Paediatrics",
+        q: "A 2-year-old child presents with inspiratory stridor, a seal-like barking cough, and a low-grade fever. The CXR shows a steeple sign. What is the causative organism?",
+        options: ["Streptococcus pneumoniae", "Parainfluenza virus", "Haemophilus influenzae type B", "Respiratory syncytial virus"],
+        answer: 1,
+        explanation: "Croup (laryngotracheobronchitis) is most commonly caused by parainfluenza virus. The barking cough and steeple sign (subglottic narrowing on AP CXR) are classic. Treatment is a single dose of oral/IM dexamethasone; nebulised adrenaline is used in severe cases."
+      },
+      {
+        topic: "Psychiatry",
+        q: "A 24-year-old man presents with a 3-week history of auditory hallucinations, delusions of persecution, and disorganised speech, with no prior psychiatric history and no substance use. What is the most likely diagnosis?",
+        options: ["Bipolar disorder — manic episode", "Schizophrenia", "Major depressive disorder with psychotic features", "Brief psychotic disorder"],
+        answer: 1,
+        explanation: "Schizophrenia requires ≥2 characteristic symptoms (hallucinations, delusions, disorganised speech/behaviour, negative symptoms) for ≥1 month, with overall disturbance for ≥6 months. First-line treatment is an atypical antipsychotic such as olanzapine or risperidone."
+      },
+      {
+        topic: "Surgery",
+        q: "A 55-year-old man presents with sudden severe central abdominal pain radiating to the back, and a pulsatile abdominal mass. BP is 90/60 mmHg. What is the immediate management priority?",
+        options: ["CT abdomen with contrast", "Urgent surgical repair (open or endovascular)", "IV fluids and monitor", "Echocardiogram"],
+        answer: 1,
+        explanation: "This is a ruptured abdominal aortic aneurysm (AAA) — a surgical emergency with ~80% mortality without intervention. Haemodynamically unstable patients should proceed directly to theatre for open repair or EVAR. Permissive hypotension (target SBP 70–80) is employed to avoid 'popping the clot'."
+      },
+      {
+        topic: "Biochemistry",
+        q: "A patient has metabolic acidosis with a high anion gap. Which of the following would NOT be a cause of high anion gap metabolic acidosis?",
+        options: ["Diabetic ketoacidosis", "Lactic acidosis", "Diarrhoea", "Aspirin toxicity"],
+        answer: 2,
+        explanation: "Diarrhoea causes a normal anion gap (hyperchloraemic) metabolic acidosis due to bicarbonate loss. High anion gap causes are remembered by the MUDPILES mnemonic: Methanol, Uraemia, DKA, Propylene glycol, Isoniazid, Lactic acidosis, Ethylene glycol, Salicylates."
+      },
+      {
+        topic: "Anatomy",
+        q: "During a laparoscopic cholecystectomy, the surgeon must identify Calot's triangle. Which structures form the boundaries of this triangle?",
+        options: ["Hepatic artery, portal vein, and bile duct", "Cystic duct, common hepatic duct, and inferior surface of the liver", "Gallbladder, duodenum, and transverse colon", "Cystic artery, portal vein, and cystic duct"],
+        answer: 1,
+        explanation: "Calot's triangle is bounded by: (1) the cystic duct inferiorly, (2) the common hepatic duct medially, and (3) the inferior surface of the liver superiorly. The cystic artery runs within this triangle and must be identified and clipped to avoid haemorrhage during cholecystectomy."
+      },
+      {
+        topic: "Microbiology",
+        q: "A 70-year-old woman develops profuse watery diarrhoea 5 days after completing a course of broad-spectrum antibiotics. What is the most likely causative organism?",
+        options: ["Salmonella typhi", "Clostridioides difficile", "Campylobacter jejuni", "Enterococcus faecalis"],
+        answer: 1,
+        explanation: "Clostridioides difficile (formerly Clostridium difficile) overgrows after antibiotic-induced disruption of normal gut flora, producing toxins A and B which cause pseudomembranous colitis. Diagnosis is via stool PCR or toxin assay. Treatment is oral vancomycin or fidaxomicin."
+      },
+      {
+        topic: "Pathology",
+        q: "A biopsy from a 60-year-old smoker's lung mass shows cells with abundant pink cytoplasm and intercellular bridges. What type of carcinoma is this?",
+        options: ["Small cell carcinoma", "Adenocarcinoma", "Squamous cell carcinoma", "Large cell carcinoma"],
+        answer: 2,
+        explanation: "Squamous cell carcinoma of the lung is characterised histologically by keratin pearls, intercellular bridges (desmosomes), and cells with abundant pink cytoplasm. It is strongly associated with smoking and typically arises centrally near the bronchi. It can cause hypercalcaemia via PTHrP secretion."
+      },
+      {
+        topic: "Ophthalmology",
+        q: "A 68-year-old man with poorly controlled diabetes presents with gradual painless visual loss. Fundoscopy shows dot and blot haemorrhages, hard exudates, and new vessel formation. What stage is his diabetic eye disease?",
+        options: ["Mild non-proliferative diabetic retinopathy", "Moderate non-proliferative diabetic retinopathy", "Proliferative diabetic retinopathy", "Diabetic macular oedema only"],
+        answer: 2,
+        explanation: "New vessel formation (neovascularisation) on the disc or elsewhere defines proliferative diabetic retinopathy — the most advanced stage. These fragile new vessels can bleed, causing vitreous haemorrhage or tractional retinal detachment. Panretinal photocoagulation and/or intravitreal anti-VEGF are used."
+      },
+      {
+        topic: "Immunology",
+        q: "A 3-year-old boy has recurrent life-threatening bacterial infections since infancy. Flow cytometry shows absent CD19+ B cells and severely reduced immunoglobulins. What is the most likely diagnosis?",
+        options: ["DiGeorge syndrome", "X-linked agammaglobulinaemia (Bruton's disease)", "Severe combined immunodeficiency (SCID)", "Common variable immunodeficiency"],
+        answer: 1,
+        explanation: "X-linked agammaglobulinaemia (XLA) is caused by mutations in Bruton's tyrosine kinase (BTK), blocking B cell maturation at the pre-B cell stage. It presents in males after 6 months (maternal IgG wanes) with recurrent encapsulated bacterial infections. Treatment is lifelong IVIG replacement."
+      }
+    ];
+
+    // ── RENDER QUESTION OF THE DAY ──────────────────────────────────────────────
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+    const idx = dayOfYear % questions.length;
+    const q = questions[idx];
+
+    // Date label
+    document.getElementById('qod-date').textContent = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('qod-topic').textContent = q.topic;
+    document.getElementById('qod-question').textContent = q.q;
+    document.getElementById('qod-num').textContent = idx + 1;
+    document.getElementById('qod-total').textContent = questions.length;
+    document.getElementById('qod-explanation-text').textContent = q.explanation;
+
+    // Build options
+    const optContainer = document.getElementById('qod-options');
+    const keys = ['A', 'B', 'C', 'D'];
+    let answered = false;
+
+    q.options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 'qod-option';
+      div.setAttribute('role', 'listitem');
+      div.setAttribute('tabindex', '0');
+      div.innerHTML = `<span class="qod-option-key">${keys[i]}</span><span class="qod-option-text">${opt}</span>`;
+
+      const select = () => {
+        if (answered) return;
+        answered = true;
+        document.querySelectorAll('.qod-option').forEach(el => el.classList.add('disabled'));
+        div.classList.add(i === q.answer ? 'correct' : 'wrong');
+        if (i !== q.answer) {
+          optContainer.children[q.answer].classList.add('correct');
+        }
+        document.getElementById('qod-reveal-btn').style.display = 'inline-flex';
+      };
+
+      div.addEventListener('click', select);
+      div.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } });
+      optContainer.appendChild(div);
+    });
+
+    // Reveal explanation
+    document.getElementById('qod-reveal-btn').addEventListener('click', function() {
+      document.getElementById('qod-explanation').classList.add('visible');
+      this.style.display = 'none';
+    });
   </script>
 
 </body>
