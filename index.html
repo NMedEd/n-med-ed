@@ -59,6 +59,35 @@
     .footer-inner { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
     .footer-brand { font-family: 'DM Serif Display', serif; font-size: 1rem; }
     .footer-copy { font-size: 0.78rem; color: var(--text-muted); }
+    /* ── QUESTION OF THE DAY ── */
+    .qod-section { margin-top: 5rem; opacity: 0; transform: translateY(16px); animation: fadeUp 0.65s ease forwards 0.25s; }
+    .qod-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .qod-card-header { background: var(--accent); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .qod-card-header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .qod-header-label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+    .qod-date { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+    .qod-topic-badge { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); padding: 0.22rem 0.6rem; border-radius: 2px; }
+    .qod-body { padding: 1.75rem 1.5rem 1.5rem; }
+    .qod-question { font-family: 'DM Serif Display', serif; font-size: 1.1rem; line-height: 1.55; color: var(--text-primary); margin-bottom: 1.5rem; }
+    .qod-options { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .qod-option { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: border-color 0.18s, background 0.18s; background: var(--bg); }
+    .qod-option:hover:not(.disabled) { border-color: var(--accent); background: var(--accent-light); }
+    .qod-option.correct { border-color: #2a6049; background: #edf4f1; }
+    .qod-option.wrong { border-color: #c0392b; background: #fdf1f0; }
+    .qod-option.disabled { cursor: default; }
+    .qod-option-key { font-size: 0.72rem; font-weight: 500; color: var(--text-muted); min-width: 1.1rem; padding-top: 0.05rem; }
+    .qod-option.correct .qod-option-key { color: #2a6049; }
+    .qod-option.wrong .qod-option-key { color: #c0392b; }
+    .qod-option-text { font-size: 0.88rem; color: var(--text-primary); line-height: 1.5; }
+    .qod-reveal-btn { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 500; color: var(--accent); background: var(--accent-light); border: 1px solid var(--accent); border-radius: 4px; padding: 0.55rem 1.1rem; cursor: pointer; transition: background 0.18s, color 0.18s; font-family: 'DM Sans', sans-serif; letter-spacing: 0.02em; }
+    .qod-reveal-btn:hover { background: var(--accent); color: #fff; }
+    .qod-explanation { display: none; margin-top: 1.25rem; padding: 1.1rem 1.25rem; background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; }
+    .qod-explanation.visible { display: block; }
+    .qod-explanation-label { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+    .qod-explanation-text { font-size: 0.86rem; color: var(--text-secondary); line-height: 1.75; }
+    .qod-footer { padding: 0.9rem 1.5rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .qod-counter { font-size: 0.72rem; color: var(--text-muted); }
+    .qod-counter span { color: var(--accent); font-weight: 500; }
     @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 600px) {
       .hero { padding: 4rem 1.25rem 3rem; }
