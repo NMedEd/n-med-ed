@@ -271,6 +271,21 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+    // ── HAMBURGER NAV ──
+    const toggle = document.getElementById('nav-toggle');
+    const dropdown = document.getElementById('nav-dropdown');
+    toggle.addEventListener('click', () => {
+      const open = dropdown.classList.toggle('open');
+      toggle.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open);
+    });
+    document.querySelectorAll('.nav-dd-link').forEach(link => {
+      link.addEventListener('click', () => {
+        dropdown.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', false);
+      });
+    });
     // ── QUESTION BANK ──────────────────────────────────────────────────────────
     const questions = [
       {
