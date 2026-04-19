@@ -256,7 +256,7 @@
       </div>
     </section>
 
-    <div class="info-strip" id="about" role="complementary">
+<div class="info-strip" id="about" role="complementary">
       <div class="info-icon" aria-hidden="true">🩺</div>
       <div class="info-content">
         <p>
@@ -280,6 +280,7 @@
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
     // ── HAMBURGER NAV ──
     const toggle = document.getElementById('nav-toggle');
     const dropdown = document.getElementById('nav-dropdown');
@@ -295,6 +296,7 @@
         toggle.setAttribute('aria-expanded', false);
       });
     });
+
     // ── QUESTION BANK ──────────────────────────────────────────────────────────
     const questions = [
       {
