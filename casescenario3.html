@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Congenital Hypertrophic Pyloric Stenosis — Clinical Scenario</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0d1b2a;
+    --deep: #1b2a3b;
+    --blue-dark: #1f3a5f;
+    --cream: #f6f4f0;
+    --white: #ffffff;
+    --text: #1e1e2e;
+  }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b2a3b 55%, #1f3a5f 100%);
+    color: #fff;
+    padding: 2.5rem 2rem 2rem;
+    border-bottom: 4px solid #e67e22;
+  }
+  .header-inner { max-width: 980px; margin: 0 auto; }
+  .header-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: #f0a86f;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.7rem, 5vw, 2.7rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  header .sub-heading {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: #f0c080;
+    margin-top: 0.3rem;
+    letter-spacing: 0.05em;
+  }
+  header p.tagline {
+    margin-top: 0.45rem;
+    color: #b8cce4;
+    font-style: italic;
+    font-size: 0.98rem;
+  }
+  .tags { margin-top: 1rem; display: flex; gap: 0.55rem; flex-wrap: wrap; }
+  .tag {
+    background: rgba(230,126,34,0.15);
+    border: 1px solid rgba(230,126,34,0.45);
+    color: #f0c080;
+    font-size: 0.68rem;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    letter-spacing: 0.1em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── MAIN ── */
+  main { max-width: 980px; margin: 0 auto; padding: 1.8rem 1rem 4rem; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.6rem; }
+  .tab-btn {
+    background: var(--white);
+    color: #444;
+    border: 2px solid #ddd;
+    padding: 0.45rem 1rem;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: 'Lora', serif;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+  }
+  .tab-btn:hover { opacity: 0.85; }
+  .tab-btn.active { color: #fff; font-weight: 600; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 4px 28px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 3px solid #eee;
+  }
+  .card-header { padding: 1.5rem 1.8rem; color: #fff; }
+  .card-header .icon { font-size: 2rem; margin-bottom: 0.35rem; }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .card-header p { margin-top: 0.3rem; opacity: 0.88; font-style: italic; font-size: 0.9rem; }
+  .card-body { padding: 1.5rem 1.8rem; }
+
+  /* ── ACCORDION ── */
+  .acc-item {
+    margin-bottom: 0.9rem;
+    border-radius: 0 10px 10px 0;
+    border-left: 4px solid var(--accent, #333);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .acc-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.09); }
+  .acc-header {
+    padding: 0.95rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    background: var(--acc-bg, #f9f9f9);
+  }
+  .acc-header h3 {
+    font-family: 'Lora', serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--accent, #333);
+  }
+  .acc-toggle {
+    font-size: 0.73rem;
+    color: #aaa;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+    margin-left: 1rem;
+  }
+  .acc-body {
+    display: none;
+    background: #fff;
+    padding: 0.9rem 1.2rem 1rem;
+    border-top: 1px solid var(--acc-border, #eee);
+  }
+  .acc-body.open { display: block; }
+  .acc-body p {
+    font-size: 0.93rem;
+    line-height: 1.82;
+    color: #2c2c2c;
+    margin-bottom: 0.35rem;
+  }
+  .acc-hint {
+    text-align: right;
+    font-size: 0.72rem;
+    color: #bbb;
+    font-style: italic;
+    margin-top: 0.4rem;
+  }
+
+  /* ── BONUS BOXES ── */
+  .bonus-box {
+    margin-top: 1.3rem;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    display: none;
+  }
+  .bonus-box.visible { display: block; }
+  .bonus-box-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 0.85rem; }
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 0.7rem;
+  }
+  .grid-card {
+    background: var(--white);
+    border-radius: 9px;
+    padding: 0.85rem 1rem;
+  }
+  .grid-card .gc-title { font-weight: 700; font-size: 0.82rem; }
+  .grid-card .gc-desc  { font-size: 0.78rem; color: #555; margin-top: 0.25rem; line-height: 1.55; }
+
+  /* Signs box — amber */
+  .signs-box { background: #fdf6ec; border: 2px solid #e67e22; }
+  .signs-box .bonus-box-title { color: #b9590a; }
+  .signs-box .grid-card { border: 1px solid #e67e2222; }
+  .signs-box .grid-card .gc-title { color: #b9590a; }
+
+  /* Electrolyte box — teal */
+  .electro-box { background: #eafaf5; border: 2px solid #1abc9c; }
+  .electro-box .bonus-box-title { color: #0e7a60; }
+  .electro-box .grid-card { border: 1px solid #1abc9c22; }
+  .electro-box .grid-card .gc-title { color: #0e7a60; }
+
+  /* Ramstedt box — blue */
+  .surgery-box { background: #eaf2fb; border: 2px solid #2980b9; }
+  .surgery-box .bonus-box-title { color: #1a5c8a; }
+  .surgery-box .grid-card { border: 1px solid #2980b922; }
+  .surgery-box .grid-card .gc-title { color: #1a5c8a; }
+
+  /* Alert strip */
+  .alert-strip {
+    display: none;
+    margin-top: 1.2rem;
+    background: #fff3cd;
+    border: 2px solid #f39c12;
+    border-radius: 10px;
+    padding: 1rem 1.4rem;
+    font-size: 0.88rem;
+    color: #7d5a00;
+    line-height: 1.75;
+  }
+  .alert-strip.visible { display: block; }
+  .alert-strip strong { color: #b7770d; }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: 0.73rem;
+    color: #bbb;
+    font-style: italic;
+    padding-bottom: 1rem;
+  }
+
+  @media (max-width: 520px) {
+    .card-body, .card-header { padding: 1.1rem; }
+    main { padding: 1.2rem 0.6rem 3rem; }
+    header { padding: 1.8rem 1rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-label">Clinical Case Scenario · Paediatric Surgery · Neonatal GI Obstruction</div>
+    <h1>Congenital Hypertrophic Pyloric Stenosis
+      <span class="sub-heading">Infantile Hypertrophic Pyloric Stenosis (IHPS)</span>
+    </h1>
+    <p class="tagline">The most common surgical cause of non-bilious projectile vomiting in infancy — a metabolic and surgical emergency</p>
+    <div class="tags">
+      <span class="tag">Paediatric Surgery</span>
+      <span class="tag">Neonatology</span>
+      <span class="tag">GI Obstruction</span>
+      <span class="tag">Metabolic Alkalosis</span>
+      <span class="tag">Ramstedt's Pyloromyotomy</span>
+      <span class="tag">Educational Purposes</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tabs" id="tabs"></div>
+
+  <div class="card" id="card">
+    <div class="card-header" id="card-header">
+      <div class="icon" id="card-icon"></div>
+      <h2 id="card-title"></h2>
+      <p id="card-subtitle"></p>
+    </div>
+    <div class="card-body" id="card-body"></div>
+  </div>
+
+  <!-- BONUS: Classic Signs (Examination tab) -->
+  <div class="bonus-box signs-box" id="box-signs">
+    <div class="bonus-box-title">👁️ Classic Clinical Signs of CHPS — Examiner's Favourites</div>
+    <div class="grid-cards">
+      <div class="grid-card">
+        <div class="gc-title">Visible Gastric Peristalsis</div>
+        <div class="gc-desc">Left-to-right peristaltic wave seen through abdominal wall after a feed — pathognomonic when present</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Olive-Shaped Tumour</div>
+        <div class="gc-desc">Palpable pyloric mass in the right hypochondrium / epigastrium — firm, mobile, felt best after vomiting. Present in ~60–80% of cases</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Projectile Vomiting</div>
+        <div class="gc-desc">Non-bilious (above ampulla of Vater), forceful, may hit across the room. Immediately hungry after vomiting — 'hungry vomiter'</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Test Feed</div>
+        <div class="gc-desc">Examination after a feed — best time to demonstrate all three signs: visible peristalsis, palpable olive, and the vomiting episode itself</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BONUS: Electrolyte Imbalance (Investigations tab) -->
+  <div class="bonus-box electro-box" id="box-electro">
+    <div class="bonus-box-title">⚗️ The Classic Metabolic Derangement in CHPS</div>
+    <div class="grid-cards">
+      <div class="grid-card">
+        <div class="gc-title">Hypochloraemic Metabolic Alkalosis</div>
+        <div class="gc-desc">Loss of HCl in vomit → ↓Cl⁻, ↑HCO₃⁻, ↑pH — the hallmark biochemical finding</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Hypokalaemia</div>
+        <div class="gc-desc">K⁺ shifts intracellularly in alkalosis; renal K⁺ wasting (aldosterone-driven); direct loss in gastric juice</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Paradoxical Aciduria</div>
+        <div class="gc-desc">Despite systemic alkalosis, urine becomes acidic — kidneys preferentially conserve Na⁺ at expense of H⁺ excretion (volume depletion overrides alkalosis correction)</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Hyponatraemia (late)</div>
+        <div class="gc-desc">Occurs in severe/prolonged cases — dilutional or due to ADH release from hypovolaemia</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BONUS: Ramstedt Surgery Details (Management tab) -->
+  <div class="bonus-box surgery-box" id="box-surgery">
+    <div class="bonus-box-title">🔪 Ramstedt's Pyloromyotomy — Surgical Pearls</div>
+    <div class="grid-cards">
+      <div class="grid-card">
+        <div class="gc-title">Procedure (Ramstedt, 1912)</div>
+        <div class="gc-desc">Longitudinal incision through serosa and circular muscle of pylorus — WITHOUT cutting the mucosa. Muscle splits apart, mucosa bulges up, relieving obstruction</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Approaches</div>
+        <div class="gc-desc">Open (right upper quadrant / periumbilical / transverse) or Laparoscopic (3-port). Laparoscopic is now preferred — faster recovery, better cosmesis, equivalent outcomes</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Feared Intraoperative Complication</div>
+        <div class="gc-desc">Mucosal perforation — especially at duodenal end where mucosa is thinnest. If suspected, repair + return to theatre; test with methylene blue or air insufflation</div>
+      </div>
+      <div class="grid-card">
+        <div class="gc-title">Post-op Feeding Protocol</div>
+        <div class="gc-desc">Early feeding (4–6 hours post-op): clear fluids → breast/formula milk. Mild post-op vomiting is expected for 24–48 hours due to oedema; not a sign of failed myotomy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert strip for Key Points tab -->
+  <div class="alert-strip" id="alert-history">
+    <strong>📚 Historical Note &amp; Eponym:</strong> Congenital Hypertrophic Pyloric Stenosis was first described anatomically by <strong>Beardsley in 1788</strong>. The first successful surgical treatment — pyloromyotomy — was performed by <strong>Conrad Ramstedt in 1912</strong> in Münster, Germany. Before Ramstedt's operation, mortality was near 100%. The operation remains essentially unchanged over a century later, a testament to its elegance. Earlier surgical attempts (e.g., gastrojejunostomy by Loreta and others) were largely unsuccessful. <strong>Hirschsprung</strong> incorrectly attributed the vomiting to spasm rather than mechanical obstruction in some early descriptions.
+  </div>
+
+  <footer>Clinical Scenario for Educational Purposes · Congenital Hypertrophic Pyloric Stenosis · Ramstedt's Pyloromyotomy (1912)</footer>
+</main>
+
+<script>
+const sections = [
+  { id:"presentation",    label:"Chief Complaint",  icon:"🩺", color:"#c0392b", shadow:"rgba(192,57,43,0.3)"   },
+  { id:"history",         label:"History",           icon:"📋", color:"#2980b9", shadow:"rgba(41,128,185,0.3)"  },
+  { id:"examination",     label:"Examination",       icon:"🔍", color:"#27ae60", shadow:"rgba(39,174,96,0.3)"   },
+  { id:"investigations",  label:"Investigations",    icon:"🧪", color:"#8e44ad", shadow:"rgba(142,68,173,0.3)"  },
+  { id:"diagnosis",       label:"Diagnosis",         icon:"💡", color:"#d35400", shadow:"rgba(211,84,0,0.3)"    },
+  { id:"management",      label:"Management",        icon:"💊", color:"#16a085", shadow:"rgba(22,160,133,0.3)"  },
+  { id:"discussion",      label:"Key Points",        icon:"📖", color:"#2c3e50", shadow:"rgba(44,62,80,0.3)"    },
+];
+
+const content = {
+
+  presentation: {
+    title: "Chief Complaint & Presentation",
+    subtitle: "A 4-week-old male infant brought to the Paediatric Surgery OPD",
+    items: [
+      {
+        heading: "Patient Profile",
+        lines: [
+          "Baby Arjun, a 4-week-old male infant, first-born child, born at 38 weeks gestation by normal vaginal delivery. Birth weight: 3.4 kg. Exclusively breastfed.",
+          "Parents present with a 10-day history of progressively worsening vomiting after every feed."
+        ]
+      },
+      {
+        heading: "Chief Complaint",
+        lines: [
+          "Vomiting after every feed for 10 days — progressively increasing in frequency and force.",
+          "The vomiting is described as 'shooting across the room' — clearly projectile.",
+          "The vomit contains curdled milk — NON-BILIOUS (not green/yellow).",
+          "After vomiting, the baby cries and immediately demands feeding again — the classic 'hungry vomiter.'",
+          "No blood in vomit. No fever. No diarrhoea."
+        ]
+      },
+      {
+        heading: "Nutritional & Growth Concern",
+        lines: [
+          "Current weight: 3.1 kg — a 300 g weight LOSS from birth weight (failure to thrive).",
+          "Reduced wet nappies over the last 3 days — oliguria suggesting dehydration.",
+          "Sunken anterior fontanelle, reduced skin turgor — clinical signs of moderate dehydration.",
+          "Parents report baby appears hungry and unsettled constantly."
+        ]
+      },
+      {
+        heading: "Why This Age? — The Classic Window",
+        lines: [
+          "CHPS classically presents between 2–8 weeks of age, with peak incidence at 3–5 weeks.",
+          "It is NEVER congenital in the true sense — the pyloric hypertrophy develops postnatally.",
+          "Presentation before 2 weeks or after 12 weeks is atypical and should prompt reconsideration of the diagnosis.",
+          "The classic mnemonic for age of presentation: 'The 3–5 week window' — confirmed by numerous clinical series."
+        ]
+      },
+    ]
+  },
+
+  history: {
+    title: "History Taking",
+    subtitle: "Systematic history to identify risk factors and confirm clinical pattern",
+    items: [
+      {
+        heading: "Characterisation of Vomiting",
+        lines: [
+          "Onset: 10 days ago, initially occasional, now after every feed.",
+          "Character: Non-bilious (critical — bile duct enters at ampulla of Vater, distal to the pylorus; obstruction is proximal to this, so no bile in vomit).",
+          "Force: Projectile — not a spitting-up or regurgitation; truly forceful ejection.",
+          "Timing: Immediately or within 30 minutes of every feed.",
+          "Content: Curdled/undigested milk — reflects gastric contents.",
+          "Hungry after vomiting: YES — distinguishes from CNS/infective causes where hunger is absent."
+        ]
+      },
+      {
+        heading: "Antenatal & Birth History",
+        lines: [
+          "Antenatal: No polyhydramnios (unlike duodenal atresia or oesophageal atresia where swallowing is impaired antenatally).",
+          "Delivery: Normal vaginal delivery at 38 weeks. No birth asphyxia.",
+          "Birth weight: 3.4 kg (normal).",
+          "Apgar scores: 8 and 9 at 1 and 5 minutes respectively.",
+          "Passed meconium within 24 hours (excludes Hirschsprung's disease as a primary diagnosis)."
+        ]
+      },
+      {
+        heading: "Feeding History",
+        lines: [
+          "Exclusively breastfed since birth — fed well initially for the first 2 weeks.",
+          "No feeding difficulties at birth — onset of vomiting was after a symptom-free interval.",
+          "Formula feeding is NOT a risk factor — CHPS occurs equally in breast and formula-fed infants.",
+          "No recent changes in formula or feeding technique."
+        ]
+      },
+      {
+        heading: "Family History — Genetics of CHPS",
+        lines: [
+          "Father had a similar illness as an infant — surgically treated. POSITIVE family history.",
+          "CHPS is a polygenic multifactorial disorder with a strong genetic component.",
+          "Risk to offspring: If mother affected → 20% risk to sons, 7% risk to daughters.",
+          "Risk to offspring: If father affected → 5% risk to sons, 2.5% risk to daughters.",
+          "Concordance in monozygotic twins: ~25% — environment also plays a role.",
+          "No family history of other GI anomalies."
+        ]
+      },
+      {
+        heading: "Epidemiological & Risk Factors",
+        lines: [
+          "Sex: Male (M:F ratio = 4–5:1) — most common in first-born males.",
+          "Ethnicity: More common in Caucasians; less common in Asians and Africans.",
+          "Erythromycin exposure: Postnatal erythromycin use (or maternal use during late pregnancy/breastfeeding) increases risk 8-fold — erythromycin is a motilin receptor agonist causing pyloric spasm → hypertrophy.",
+          "Blood group: Association with blood groups B and O reported.",
+          "Seasonal variation: Slight increase in spring and summer births.",
+          "Incidence: 1–3 per 1,000 live births in Western populations."
+        ]
+      },
+      {
+        heading: "Drug & Medication History",
+        lines: [
+          "Mother received erythromycin for 5 days postnatally for mastitis — a SIGNIFICANT risk factor.",
+          "No other medications. No antacids given to the infant.",
+          "No history of maternal prostaglandin use antenatally.",
+          "Immunisations up to date for age."
+        ]
+      },
+    ]
+  },
+
+  examination: {
+    title: "Physical Examination",
+    subtitle: "A systematic clinical evaluation including the classic 'test feed'",
+    items: [
+      {
+        heading: "General Appearance",
+        lines: [
+          "The baby appears thin, wasted, and irritable — with visible loss of subcutaneous fat.",
+          "Skin appears loose — loss of skin turgor (moderate dehydration).",
+          "Mucous membranes dry. Anterior fontanelle sunken — consistent with significant volume depletion.",
+          "Weight: 3.1 kg — 300 g below birth weight (failure to thrive).",
+          "Jaundice: Mild icterus noted (scleral jaundice) — 'Icterus of Pyloric Stenosis': unconjugated hyperbilirubinaemia due to reduced hepatic glucuronyl transferase activity from starvation/caloric deficiency; resolves after surgery."
+        ]
+      },
+      {
+        heading: "Vital Signs",
+        lines: [
+          "HR: 148/min (tachycardia — dehydration).",
+          "RR: 36/min (may hyperventilate slightly to compensate for metabolic alkalosis — Kussmaul breathing is NOT seen; instead, respiratory compensation is HYPOVENTILATION to retain CO₂).",
+          "Capillary refill time: 3 seconds (mildly prolonged).",
+          "Temperature: 36.8°C — afebrile.",
+          "Blood pressure: Difficult to measure accurately in infants — radial pulse thready."
+        ]
+      },
+      {
+        heading: "Abdominal Examination — Inspection",
+        lines: [
+          "Abdomen: Mildly distended in the upper abdomen (gastric distension).",
+          "VISIBLE GASTRIC PERISTALSIS: A left-to-right peristaltic wave is observed through the thin abdominal wall, especially after feeding — the hypertrophied stomach trying to push contents through the narrowed pylorus.",
+          "This sign is best elicited by offering the baby a feed under observation — the 'test feed.'",
+          "No visible intestinal peristalsis (which would suggest lower obstruction)."
+        ]
+      },
+      {
+        heading: "Abdominal Examination — Palpation",
+        lines: [
+          "THE OLIVE: A firm, non-tender, mobile, olive-shaped mass is palpable in the RIGHT HYPOCHONDRIUM / EPIGASTRIUM, just lateral to the right rectus muscle.",
+          "Size: Approximately 2 cm × 1 cm — the hypertrophied pyloric muscle.",
+          "Best palpated: After the baby vomits (stomach is empty, pylorus is more accessible) or during a test feed.",
+          "Technique: Use warm hands, flex the baby's hips to relax abdominal muscles, palpate gently from the right side with the examiner's left hand.",
+          "Palpable in approximately 60–80% of cases by an experienced examiner.",
+          "If the olive is palpated confidently, ultrasound confirmation still recommended before surgery."
+        ]
+      },
+      {
+        heading: "Test Feed — The Classic Clinical Examination",
+        lines: [
+          "The 'test feed' is conducted by offering breast milk or formula while the examiner palpates the abdomen.",
+          "During the feed: Visible gastric peristalsis (left-to-right wave) is observed.",
+          "During the feed: The pyloric olive becomes palpable as the stomach fills and contracts.",
+          "After the feed: Projectile vomiting occurs — observed directly by the clinician.",
+          "The test feed simultaneously demonstrates all three classic signs and may be diagnostic without imaging.",
+          "In modern practice, ultrasound has largely replaced the test feed for confirmation, but the test feed remains clinically important."
+        ]
+      },
+      {
+        heading: "Other Systems",
+        lines: [
+          "Cardiovascular: Tachycardia, peripheral pulses weak — compensated shock.",
+          "Respiratory: Tachypnoea (secondary to dehydration); lungs clear on auscultation.",
+          "Genitalia: Normal male external genitalia; both testes descended.",
+          "CNS: Baby alert, responsive to stimuli — no meningismus, no bulging fontanelle.",
+          "Musculoskeletal: No dysmorphic features. No associated anomalies apparent."
+        ]
+      },
+    ]
+  },
+
+  investigations: {
+    title: "Investigations",
+    subtitle: "Confirming the diagnosis and assessing metabolic status",
+    items: [
+      {
+        heading: "Ultrasound Abdomen (Investigation of Choice)",
+        lines: [
+          "GOLD STANDARD for diagnosis of CHPS — sensitivity 95–100%, specificity ~99%.",
+          "Performed by a high-frequency (7.5–10 MHz) linear probe in the right upper quadrant / epigastrium.",
+          "Diagnostic criteria (Teele & Smith, confirmed by Stunden et al.):",
+          "→ Pyloric muscle thickness (MT): ≥ 3–4 mm (most reliable single criterion).",
+          "→ Pyloric channel length (CL): ≥ 15–17 mm.",
+          "→ Pyloric transverse diameter: ≥ 13–15 mm.",
+          "Dynamic findings: Lack of passage of gastric contents through pylorus during real-time observation.",
+          "The 'TARGET SIGN' (or 'doughnut sign'): On transverse section — hypoechoic muscle ring surrounding central echogenic mucosa.",
+          "The 'CERVIX SIGN': On longitudinal section — pyloric mass resembling a cervix protruding into the antrum.",
+          "Ultrasound also helps identify a distended, peristalsing stomach with no fluid passage into duodenum."
+        ]
+      },
+      {
+        heading: "Serum Electrolytes & Arterial Blood Gas (ABG)",
+        lines: [
+          "This is MANDATORY before surgery — metabolic status must be corrected pre-operatively.",
+          "Expected findings:",
+          "→ Na⁺: Low-normal or ↓ (hyponatraemia in severe/late cases).",
+          "→ K⁺: ↓ (hypokalaemia — 3.0–3.4 mEq/L).",
+          "→ Cl⁻: ↓ (hypochloraemia — the most consistent finding; Cl⁻ <98 mEq/L).",
+          "→ HCO₃⁻: ↑ (metabolic alkalosis — HCO₃⁻ >26 mEq/L, often 30–40 mEq/L).",
+          "→ pH: ↑ (alkalosis — pH >7.45).",
+          "→ pCO₂: ↑ (respiratory compensation — hypoventilation to retain CO₂).",
+          "The classic metabolic picture: Hypochloraemic, Hypokalaemic Metabolic Alkalosis with paradoxical aciduria.",
+          "Surgery must NOT proceed until Cl⁻ ≥ 100 mEq/L and K⁺ ≥ 3.5 mEq/L — a non-negotiable surgical principle."
+        ]
+      },
+      {
+        heading: "Barium Meal (Historical — Rarely Used Now)",
+        lines: [
+          "Largely replaced by ultrasound — used if ultrasound inconclusive or unavailable.",
+          "Classic radiological signs:",
+          "→ 'STRING SIGN' (Cantor sign): Thin elongated stream of barium through narrowed pyloric channel — the most classic barium finding.",
+          "→ 'SHOULDER SIGN': Pyloric muscle indenting the gastric antrum, resembling shoulders.",
+          "→ 'MUSHROOM SIGN' / 'DOUBLE TRACK SIGN': Barium tracks along narrow channels on either side of the hypertrophied mucosa.",
+          "→ 'BEAK SIGN': Pointed narrowing at the pyloric end of the antrum.",
+          "Risks: Aspiration of barium (contraindicated if significant aspiration risk), radiation exposure.",
+          "Never give barium before ensuring the baby is nil by mouth and stable."
+        ]
+      },
+      {
+        heading: "Full Blood Count (FBC)",
+        lines: [
+          "Haemoglobin: May be elevated (haemoconcentration due to dehydration) — spuriously 'normal' Hb may mask anaemia.",
+          "WBC: Normal (no infection expected).",
+          "Haematocrit: Elevated — confirms dehydration.",
+          "Platelets: Normal."
+        ]
+      },
+      {
+        heading: "Urine Analysis",
+        lines: [
+          "Urine pH: ACIDIC — despite systemic metabolic alkalosis (paradoxical aciduria).",
+          "Mechanism: In the presence of volume depletion and hypokalaemia, the kidney's priority is Na⁺ and volume conservation. H⁺ is secreted in exchange for Na⁺ in the distal tubule, making urine acidic — even though the blood is alkalotic.",
+          "Urine specific gravity: High (>1.020) — concentrated urine confirming dehydration.",
+          "Urine Na⁺: Low (kidney retaining Na⁺ avidly — pre-renal state).",
+          "No ketonuria in early cases; ketonuria may appear in prolonged starvation."
+        ]
+      },
+      {
+        heading: "Blood Glucose",
+        lines: [
+          "Hypoglycaemia may occur — especially in malnourished, dehydrated infants.",
+          "Glucose monitoring is mandatory pre- and post-operatively.",
+          "IV dextrose-containing fluids must be incorporated into resuscitation fluids."
+        ]
+      },
+      {
+        heading: "Chest X-ray (Pre-operative)",
+        lines: [
+          "Required as part of pre-operative assessment.",
+          "May show dilated stomach bubble with minimal intestinal gas.",
+          "Absence of air beyond the stomach on plain film supports gastric outlet obstruction.",
+          "Rules out aspiration pneumonia — a potential complication of recurrent vomiting."
+        ]
+      },
+    ]
+  },
+
+  diagnosis: {
+    title: "Diagnosis",
+    subtitle: "Congenital Hypertrophic Pyloric Stenosis (CHPS / IHPS)",
+    items: [
+      {
+        heading: "Confirmed Diagnosis",
+        lines: [
+          "CONGENITAL HYPERTROPHIC PYLORIC STENOSIS (CHPS) — also called Infantile Hypertrophic Pyloric Stenosis (IHPS).",
+          "Definition: Progressive hypertrophy and hyperplasia of the circular muscle of the pylorus, causing functional gastric outlet obstruction in infancy.",
+          "The pyloric muscle increases 3–4× its normal size — narrowing and elongating the pyloric channel.",
+          "The condition is NOT truly 'congenital' — hypertrophy develops postnatally, explaining the symptom-free interval after birth."
+        ]
+      },
+      {
+        heading: "Pathology & Pathophysiology",
+        lines: [
+          "Gross: The pylorus appears as a firm, pale, olive-shaped tumour — approximately 2 cm long and 1.5 cm wide.",
+          "The circular muscle is thickened (3–4 mm vs normal 1–2 mm) with a narrowed, elongated channel (15–20 mm vs normal 5–7 mm).",
+          "Histology: Hypertrophy AND hyperplasia of the circular smooth muscle fibres.",
+          "The longitudinal muscle fibres are relatively spared — explains the surgical approach (splitting circular muscle only).",
+          "Mucosa: Oedematous, thrown into folds — further compromises the lumen.",
+          "Pathogenesis (multifactorial):",
+          "→ Decreased neuronal nitric oxide synthase (nNOS) in the pyloric muscle — reduced NO production → failure of pyloric relaxation → functional obstruction → progressive muscular hypertrophy.",
+          "→ Abnormal interstitial cells of Cajal (ICC) distribution.",
+          "→ Elevated levels of growth factors (IGF-1, EGF) locally.",
+          "→ Genetic predisposition + environmental triggers (erythromycin, postnatal prostaglandins)."
+        ]
+      },
+      {
+        heading: "Metabolic Derangement — Pathophysiology",
+        lines: [
+          "Persistent vomiting of gastric contents (HCl + KCl) → loss of H⁺ and Cl⁻.",
+          "↓ H⁺ in plasma → Metabolic alkalosis (↑HCO₃⁻).",
+          "↓ Cl⁻ → Hypochloraemia.",
+          "Kidney compensates: ↓ Cl⁻ available for renal tubules → kidney reabsorbs HCO₃⁻ in exchange for Cl⁻ → worsens alkalosis paradoxically.",
+          "Volume depletion → ↑Aldosterone → Na⁺ retained, K⁺ and H⁺ excreted → Hypokalaemia + Paradoxical Aciduria.",
+          "Final result: Hypochloraemic, Hypokalaemic, Metabolic Alkalosis with Paradoxical Aciduria.",
+          "Note: This is the SAME metabolic picture as in any high gastric outlet obstruction (e.g., duodenal ulcer with pyloric stenosis in adults)."
+        ]
+      },
+      {
+        heading: "Differential Diagnoses (Systematically Excluded)",
+        lines: [
+          "1. GASTRO-OESOPHAGEAL REFLUX (GOR): Most common — but vomiting is non-projectile, non-progressive; baby gains weight; responds to positioning/antacids; no olive.",
+          "2. PYLOROSPASM: Functional spasm without true hypertrophy; responds to antispasmodics; ultrasound normal; self-limiting.",
+          "3. DUODENAL ATRESIA / STENOSIS: BILIOUS vomiting (post-ampullary obstruction); 'Double bubble' on X-ray; often associated with Down syndrome; present from day 1 of life.",
+          "4. MALROTATION WITH VOLVULUS: BILIOUS vomiting; midgut catastrophe; abdominal tenderness; emergency laparotomy.",
+          "5. OVERFEEDING: Non-projectile; weight gain normal; no olive; resolves with feeding adjustment.",
+          "6. ADRENAL INSUFFICIENCY (Congenital Adrenal Hyperplasia): Salt-wasting CAH — hyponatraemia, hyperkalaemia (opposite electrolyte pattern); ambiguous genitalia; metabolic ACIDOSIS.",
+          "7. INTRACRANIAL HYPERTENSION: Vomiting without nausea; bulging fontanelle; setting-sun sign; no olive.",
+          "8. HIATAL HERNIA: Vomiting with haematemesis; oesophageal symptoms; contrast study diagnostic."
+        ]
+      },
+      {
+        heading: "Associated Anomalies",
+        lines: [
+          "CHPS is predominantly an isolated defect — but associations include:",
+          "→ Hiatal hernia (~2% of cases).",
+          "→ Oesophageal atresia (rare — combination requires staged correction).",
+          "→ Intestinal malrotation (rare).",
+          "→ Turner syndrome, Trisomy 18 — very rare associations.",
+          "→ Apert syndrome (craniosynostosis) — higher incidence of CHPS.",
+          "CHPS is NOT associated with Down syndrome (which is associated with duodenal atresia)."
+        ]
+      },
+    ]
+  },
+
+  management: {
+    title: "Management",
+    subtitle: "Resuscitate first, operate second — a surgical but not immediate emergency",
+    items: [
+      {
+        heading: "Critical Principle: NOT an Immediate Emergency",
+        lines: [
+          "CHPS is a SURGICAL emergency but NOT an IMMEDIATE (life-threatening) emergency.",
+          "The priority is metabolic resuscitation BEFORE surgery.",
+          "Operating on a baby with uncorrected alkalosis risks fatal cardiac arrhythmias under anaesthesia.",
+          "Golden rule: 'Correct the electrolytes, then correct the pylorus.'",
+          "Resuscitation typically takes 24–48 hours — surgery follows once biochemical targets are met.",
+          "Surgery is NOT performed until: Cl⁻ ≥ 100 mEq/L, K⁺ ≥ 3.5 mEq/L, HCO₃⁻ ≤ 26 mEq/L, adequate urine output established."
+        ]
+      },
+      {
+        heading: "Step 1: IV Fluid Resuscitation",
+        lines: [
+          "Stop all oral feeding immediately — nil by mouth (NBM).",
+          "Insert a nasogastric (NG) tube: Free drainage to decompress the stomach, prevent aspiration.",
+          "Phase 1 — Volume resuscitation (if shocked): 0.9% Normal saline 10–20 mL/kg IV bolus over 30–60 minutes.",
+          "Phase 2 — Deficit correction: 0.45% NaCl + 5% Dextrose with 20–40 mEq/L KCl at 1.5× maintenance rate.",
+          "Note: Do NOT use hypotonic fluids alone — hyponatraemia and cerebral oedema risk.",
+          "Note: Do NOT add K⁺ until adequate urine output confirmed (>1 mL/kg/hour).",
+          "Monitor: Serum electrolytes every 4–6 hours; urine output via catheter or nappy weighing.",
+          "Target: Correcting chloride and potassium to safe surgical levels within 24–48 hours."
+        ]
+      },
+      {
+        heading: "Step 2: Pre-operative Preparation",
+        lines: [
+          "Continue NG tube on free drainage — aspiration risk prevention.",
+          "Blood group and cross-match (for surgical preparation — actual blood loss is minimal).",
+          "Pre-operative bloods: FBC, U&E, glucose, clotting screen.",
+          "Paediatric anaesthesia consultation — neonatal intubation by experienced team.",
+          "Vitamin K 1 mg IM — ensures adequate clotting factors.",
+          "Written informed parental consent — explain procedure, risks (mucosal perforation, incomplete myotomy), and expected post-operative course.",
+          "Mark operation site if applicable."
+        ]
+      },
+      {
+        heading: "Step 3: Definitive Surgery — Ramstedt's Pyloromyotomy",
+        lines: [
+          "Operation: Ramstedt's Pyloromyotomy (Fredet-Ramstedt operation, 1912).",
+          "Principle: A longitudinal incision is made through the serosa and hypertrophied circular muscle fibres of the pylorus, WITHOUT breaching the mucosa. The muscle springs apart, the mucosa herniates upward, and the obstruction is relieved.",
+          "Approaches:",
+          "→ Open: Right upper quadrant incision, or periumbilical / circumumbilical incision (better cosmesis).",
+          "→ Laparoscopic: Three 3-mm ports; equally effective; shorter hospital stay; preferred in experienced centres.",
+          "Key intraoperative steps: Identify the pylorus, incise from antrum to duodenum stopping 2 mm proximal to the pyloroduodenal junction (where mucosa is most friable), split muscle bluntly with Tan-Borden spreader.",
+          "Test for mucosal integrity: Inject air via NG tube into stomach while submerging pylorus in saline — bubbles indicate perforation.",
+          "Duration: 30–45 minutes."
+        ]
+      },
+      {
+        heading: "Post-operative Care & Feeding Protocol",
+        lines: [
+          "Early feeding protocol — begins 4–6 hours after surgery:",
+          "→ Clear fluids / expressed breast milk (10–15 mL) every 3 hours for first 6 hours.",
+          "→ Gradually increase volumes over 24–48 hours.",
+          "→ Full breast/formula feeds usually tolerated within 24–48 hours.",
+          "Post-operative vomiting: Expected in ~80% of babies for the first 24–48 hours — due to oedema at the myotomy site; does NOT indicate failed surgery.",
+          "Persistent vomiting beyond 5 days: Suggests incomplete myotomy — repeat ultrasound ± contrast study; may require re-operation.",
+          "Monitor blood glucose closely post-operatively — risk of hypoglycaemia.",
+          "Discharge: Usually within 24–48 hours of tolerating full feeds.",
+          "Follow-up: At 2 weeks for wound check and weight review."
+        ]
+      },
+      {
+        heading: "Complications of Pyloromyotomy",
+        lines: [
+          "Intraoperative:",
+          "→ Mucosal perforation (1–3%) — most feared; occurs at duodenal end; managed by primary suture repair.",
+          "→ Incomplete myotomy — if muscle fibres at duodenal end are not fully divided.",
+          "Post-operative:",
+          "→ Wound infection (1–2%).",
+          "→ Persistent vomiting — incomplete myotomy vs oedema (most common benign cause).",
+          "→ Hypoglycaemia — monitor blood glucose.",
+          "→ Aspiration pneumonia — prevented by NG decompression pre-op.",
+          "Long-term: Excellent — no long-term sequelae; pylorus remodels to normal size within months."
+        ]
+      },
+      {
+        heading: "Non-Surgical (Medical) Management — Atropine",
+        lines: [
+          "Atropine (IV or oral): Anticholinergic agent that relaxes the pyloric muscle — used as an alternative to surgery in selected cases.",
+          "Mechanism: Blocks muscarinic receptors on pyloric smooth muscle → reduces pylorospasm and allows gradual remodelling.",
+          "Evidence: IV atropine (0.01 mg/kg 4-hourly) or oral atropine — success rate ~85–90% in several Japanese and European studies.",
+          "Drawbacks: Prolonged hospitalisation (3–6 weeks vs 1–2 days for surgery), high failure rate requiring eventual surgery, side effects (tachycardia, urinary retention, flushing).",
+          "Role: Reserved for families who refuse surgery, extremely high-risk surgical candidates, or where surgical expertise is unavailable.",
+          "Current standard of care worldwide remains Ramstedt's pyloromyotomy."
+        ]
+      },
+    ]
+  },
+
+  discussion: {
+    title: "Clinical Pearls & Key Points",
+    subtitle: "High-yield facts for comprehensive understanding",
+    items: [
+      {
+        heading: "The Classic Triad (Must Know)",
+        lines: [
+          "1. NON-BILIOUS PROJECTILE VOMITING — after every feed; hungry immediately after.",
+          "2. PALPABLE PYLORIC OLIVE — firm, mobile, olive-shaped mass in right hypochondrium.",
+          "3. VISIBLE GASTRIC PERISTALSIS — left-to-right wave across upper abdomen.",
+          "Mnemonic: 'OLIVES' → Onset 3–5 weeks; Left-to-right peristalsis; Inquire about family history; Vomiting non-bilious, projectile; Electrolytes show hypochloraemic alkalosis; Surgery = Ramstedt's pyloromyotomy."
+        ]
+      },
+      {
+        heading: "Classic Metabolic Picture — Exam Favourite",
+        lines: [
+          "↓ Cl⁻ (Hypochloraemia) — THE most consistent finding; loss of HCl in vomit.",
+          "↓ K⁺ (Hypokalaemia) — aldosterone-driven + intracellular shift in alkalosis.",
+          "↑ HCO₃⁻ / ↑ pH (Metabolic alkalosis) — loss of H⁺.",
+          "↑ pCO₂ (Respiratory compensation — hypoventilation, NOT hyperventilation).",
+          "PARADOXICAL ACIDURIA — urine is acidic despite blood alkalosis (volume depletion drives Na⁺ retention at the cost of H⁺ excretion).",
+          "Remember: The respiratory compensation in metabolic alkalosis is HYPOVENTILATION (retain CO₂ to correct pH) — opposite to metabolic acidosis where the response is hyperventilation (Kussmaul breathing)."
+        ]
+      },
+      {
+        heading: "Why NON-BILIOUS Vomiting? — Anatomical Basis",
+        lines: [
+          "The pylorus is located PROXIMAL to the ampulla of Vater (where the common bile duct opens into the duodenum at the 2nd part).",
+          "Obstruction at the pylorus prevents stomach contents reaching the duodenum.",
+          "Therefore: NO bile enters the vomit — non-bilious vomiting.",
+          "Rule of thumb: BILIOUS vomiting in a neonate = obstruction BELOW the ampulla of Vater (duodenal atresia, jejunal atresia, malrotation, volvulus) — always a surgical emergency until proven otherwise.",
+          "NON-BILIOUS vomiting = obstruction ABOVE the ampulla (pyloric stenosis, oesophageal atresia, GOR, overfeeding)."
+        ]
+      },
+      {
+        heading: "Ultrasound Criteria — Numbers to Remember",
+        lines: [
+          "Pyloric Muscle Thickness (MT): ≥ 3–4 mm (diagnostic) — single most reliable criterion.",
+          "Pyloric Channel Length (CL): ≥ 15–17 mm.",
+          "Pyloric Transverse Diameter: ≥ 13–15 mm.",
+          "Target / Doughnut sign: On transverse US — hypoechoic muscle ring around echogenic mucosa.",
+          "Cervix sign: On longitudinal US — pyloric mass resembling cervix protruding into antrum.",
+          "No fluid passage: Real-time US shows absent gastric emptying through the pylorus.",
+          "Sensitivity/Specificity of US: 95–100% / ~99% — gold standard diagnostic modality."
+        ]
+      },
+      {
+        heading: "Barium Meal — Radiological Signs (Historical but High-Yield)",
+        lines: [
+          "String sign (Cantor sign): Thin elongated thread of barium through the narrowed pyloric channel.",
+          "Shoulder sign: Pyloric muscle creates a smooth impression on the gastric antrum — like shoulders.",
+          "Double track sign: Two thin parallel channels of barium in the narrowed pylorus.",
+          "Mushroom sign: Bulging of pyloric mucosa resembling a mushroom cap.",
+          "Beak sign: Tapered narrowing at the pyloric end of the antrum.",
+          "Delayed gastric emptying: Barium remains in stomach for >3 hours."
+        ]
+      },
+      {
+        heading: "Pre-operative Correction — Surgical Safety Rule",
+        lines: [
+          "NEVER operate until metabolic derangement is corrected — fatal arrhythmia risk under alkalotic anaesthesia.",
+          "Surgical safety targets: Cl⁻ ≥ 100 mEq/L | K⁺ ≥ 3.5 mEq/L | HCO₃⁻ ≤ 26 mEq/L | Urine output ≥ 1 mL/kg/hour.",
+          "Fluid of choice: 0.45% NaCl + 5% Dextrose + KCl (once urine output established).",
+          "Do NOT rush to the operating theatre — resuscitation takes priority.",
+          "CHPS is a surgical emergency but NOT an immediate life-threatening emergency — there is time to correct metabolic status safely."
+        ]
+      },
+      {
+        heading: "Jaundice in Pyloric Stenosis",
+        lines: [
+          "Unconjugated (indirect) hyperbilirubinaemia occurs in ~2–5% of CHPS cases.",
+          "Mechanism: Caloric deprivation and starvation → decreased hepatic glucuronyl transferase (UGT1A1) activity → impaired bilirubin conjugation.",
+          "This is NOT biliary obstruction — direct bilirubin is normal.",
+          "It resolves spontaneously after surgery and adequate nutrition.",
+          "Associated with Gilbert's syndrome (UGT1A1 polymorphism) in some genetic studies."
+        ]
+      },
+      {
+        heading: "References",
+        lines: [
+          "1. Ramstedt C. Zur Operation der angeborenen Pylorusstenose. Medizinische Klinik. 1912;8:1702–1705.",
+          "2. Teele RL, Smith EH. Ultrasound in the diagnosis of idiopathic hypertrophic pyloric stenosis. N Engl J Med. 1977;296(20):1149–1150.",
+          "3. Aspelund G, Langer JC. Current management of hypertrophic pyloric stenosis. Semin Pediatr Surg. 2007;16(1):27–33.",
+          "4. Maheshwari N. Are young infants treated with erythromycin at risk for developing hypertrophic pyloric stenosis? Arch Dis Child. 2007;92(3):271–273.",
+          "5. Hall NJ, Eaton S, Seims A, et al. Risk of incomplete pyloromyotomy and its consequences. J Pediatr Surg. 2014;49(11):1609–1613.",
+          "6. Schwartz's Principles of Surgery, 11th ed. Brunicardi FC et al. Chapter on Pediatric Surgery. McGraw-Hill.",
+          "7. O'Neill JA, Coran AG, Fonkalsrud EW, Grosfeld JL. Pediatric Surgery, 6th ed. Mosby. Chapter on Gastric Outlet Obstruction in Infancy."
+        ]
+      },
+    ]
+  },
+};
+
+let activeId = "presentation";
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function buildTabs() {
+  const container = document.getElementById("tabs");
+  container.innerHTML = "";
+  sections.forEach(s => {
+    const btn = document.createElement("button");
+    btn.className = "tab-btn" + (s.id === activeId ? " active" : "");
+    if (s.id === activeId) {
+      btn.style.background  = s.color;
+      btn.style.borderColor = s.color;
+      btn.style.boxShadow   = `0 3px 12px ${s.shadow}`;
+    }
+    btn.innerHTML = `<span>${s.icon}</span> ${s.label}`;
+    btn.addEventListener("click", () => { activeId = s.id; render(); });
+    container.appendChild(btn);
+  });
+}
+
+function buildCard() {
+  const sec   = sections.find(s => s.id === activeId);
+  const data  = content[activeId];
+  const color = sec.color;
+
+  document.getElementById("card").style.borderColor = hexToRgba(color, 0.18);
+  document.documentElement.style.setProperty("--accent",     color);
+  document.documentElement.style.setProperty("--acc-bg",     hexToRgba(color, 0.07));
+  document.documentElement.style.setProperty("--acc-border", hexToRgba(color, 0.18));
+
+  document.getElementById("card-header").style.background =
+    `linear-gradient(135deg, ${color}ee, ${color}99)`;
+  document.getElementById("card-icon").textContent     = sec.icon;
+  document.getElementById("card-title").textContent    = data.title;
+  document.getElementById("card-subtitle").textContent = data.subtitle;
+
+  const body = document.getElementById("card-body");
+  body.innerHTML = "";
+
+  data.items.forEach(item => {
+    const acc = document.createElement("div");
+    acc.className = "acc-item";
+
+    const hd = document.createElement("div");
+    hd.className = "acc-header";
+    hd.innerHTML = `<h3>${item.heading}</h3><span class="acc-toggle">▼ show</span>`;
+
+    const bd = document.createElement("div");
+    bd.className = "acc-body";
+
+    item.lines.forEach(line => {
+      const p = document.createElement("p");
+      p.textContent = line;
+      if (line.startsWith("→")) p.style.paddingLeft = "0.8rem";
+      bd.appendChild(p);
+    });
+
+    hd.addEventListener("click", () => {
+      const open = bd.classList.toggle("open");
+      hd.querySelector(".acc-toggle").textContent = open ? "▲ hide" : "▼ show";
+    });
+
+    acc.appendChild(hd);
+    acc.appendChild(bd);
+    body.appendChild(acc);
+  });
+
+  const hint = document.createElement("div");
+  hint.className = "acc-hint";
+  hint.textContent = "Click each card to reveal / hide content";
+  body.appendChild(hint);
+
+  // Bonus boxes visibility
+  document.getElementById("box-signs").classList.toggle("visible",   activeId === "examination");
+  document.getElementById("box-electro").classList.toggle("visible", activeId === "investigations");
+  document.getElementById("box-surgery").classList.toggle("visible", activeId === "management");
+  document.getElementById("alert-history").classList.toggle("visible", activeId === "discussion");
+}
+
+function render() { buildTabs(); buildCard(); }
+render();
+</script>
+</body>
+</html>
