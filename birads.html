@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BI-RADS Classification</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg-deep:       #05080f;
+    --bg-panel:      #090f1e;
+    --border-glow:   #1a3060;
+    --accent:        #4a8ef5;
+    --accent-bright: #70b0ff;
+    --text-primary:  #dce8ff;
+    --text-sec:      #5a88c0;
+    --text-muted:    #274060;
+
+    /* Category colours */
+    --c0:   #607d8b;
+    --c1:   #26c87e;
+    --c2:   #00e096;
+    --c3:   #f0c840;
+    --c4a:  #f4a733;
+    --c4b:  #f07030;
+    --c4c:  #e83030;
+    --c5:   #c42020;
+    --c6:   #8b1a8b;
+
+    /* section accents */
+    --s1: #4a8ef5;
+    --s2: #9b6bdf;
+    --s3: #df9b6b;
+    --s4: #6bdf9b;
+  }
+
+  html { font-size:16px; }
+
+  body {
+    background: var(--bg-deep);
+    font-family: 'Exo 2', sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: clamp(18px,4vw,48px) clamp(10px,3vw,28px);
+    background-image:
+      radial-gradient(ellipse 85% 40% at 50% -5%, rgba(74,142,245,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 25% at 88% 88%, rgba(112,176,255,0.04) 0%, transparent 50%);
+  }
+
+  .wrapper { width:100%; max-width:1060px; margin:0 auto; }
+
+  /* ══════════════════════
+     HEADER
+  ══════════════════════ */
+  .header { text-align:center; margin-bottom:clamp(22px,4vw,40px); }
+
+  .header-eyebrow {
+    font-family:'Share Tech Mono', monospace;
+    font-size:clamp(9px,1.4vw,11px); letter-spacing:clamp(2px,0.5vw,4px);
+    color:var(--accent-bright); text-transform:uppercase;
+    margin-bottom:10px; opacity:.8;
+  }
+
+  .header h1 {
+    font-family:'Rajdhani', sans-serif;
+    font-size:clamp(26px,6vw,50px); font-weight:700;
+    letter-spacing:clamp(1px,0.4vw,4px); text-transform:uppercase; line-height:1;
+    background:linear-gradient(135deg,#dce8ff 0%,#4a8ef5 50%,#70b0ff 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+
+  .header-sub {
+    font-size:clamp(11px,1.8vw,13px); color:var(--text-sec);
+    letter-spacing:clamp(1px,0.3vw,2px); margin-top:8px; font-weight:300;
+  }
+
+  .header-line {
+    width:clamp(120px,28vw,220px); height:1px;
+    background:linear-gradient(90deg,transparent,var(--accent-bright),transparent);
+    margin:16px auto 0;
+  }
+
+  /* ══════════════════════
+     SUMMARY CARDS
+  ══════════════════════ */
+  .summary-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:clamp(8px,1.5vw,14px);
+    margin-bottom:clamp(20px,3vw,32px);
+  }
+
+  .sum-card {
+    background:var(--bg-panel);
+    border:1px solid rgba(74,142,245,0.14);
+    border-radius:10px;
+    padding:clamp(12px,2vw,20px) clamp(12px,1.8vw,18px);
+    position:relative; overflow:hidden;
+    box-shadow:0 8px 28px rgba(0,0,0,0.45);
+  }
+
+  .sum-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  }
+  .sum-card.c-benign::before  { background:linear-gradient(90deg,transparent,var(--c2),transparent); }
+  .sum-card.c-prob::before    { background:linear-gradient(90deg,transparent,var(--c3),transparent); }
+  .sum-card.c-susp::before    { background:linear-gradient(90deg,transparent,var(--c4b),transparent); }
+  .sum-card.c-mal::before     { background:linear-gradient(90deg,transparent,var(--c5),transparent); }
+
+  .sum-card-eye  { font-family:'Share Tech Mono',monospace; font-size:clamp(8px,1vw,10px); letter-spacing:2px; text-transform:uppercase; opacity:.45; margin-bottom:5px; }
+  .sum-card-cat  { font-family:'Rajdhani',sans-serif; font-size:clamp(18px,3.5vw,30px); font-weight:700; line-height:1; }
+  .sum-card-lbl  { font-size:clamp(10px,1.4vw,12px); font-weight:600; margin-top:4px; letter-spacing:.5px; }
+  .sum-card-risk { font-family:'Share Tech Mono',monospace; font-size:clamp(8px,1.1vw,10px); opacity:.55; margin-top:3px; letter-spacing:1px; }
+
+  /* ══════════════════════
+     SECTION BLOCK
+  ══════════════════════ */
+  .section-block { margin-bottom:clamp(18px,3vw,28px); }
+
+  .section-header {
+    display:flex; align-items:center; gap:clamp(8px,2vw,14px);
+    padding:clamp(10px,1.8vw,14px) clamp(14px,2.5vw,22px);
+    background:rgba(74,142,245,0.05);
+    border-left:4px solid; border-radius:8px 8px 0 0;
+  }
+
+  .section-letter {
+    font-family:'Rajdhani',sans-serif;
+    font-size:clamp(20px,3.5vw,32px); font-weight:700; line-height:1; flex-shrink:0;
+  }
+
+  .section-title-wrap { display:flex; flex-direction:column; min-width:0; }
+
+  .section-title {
+    font-family:'Rajdhani',sans-serif;
+    font-size:clamp(13px,2.2vw,17px); font-weight:700;
+    letter-spacing:clamp(1px,0.3vw,2px); text-transform:uppercase;
+  }
+
+  .section-desc {
+    font-family:'Share Tech Mono',monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:1px; opacity:.5;
+    margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* ══════════════════════
+     TABLE WRAP
+  ══════════════════════ */
+  .table-wrap {
+    background:var(--bg-panel);
+    border:1px solid rgba(74,142,245,0.13);
+    border-top:none; border-radius:0 0 10px 10px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    position:relative;
+    box-shadow:0 16px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.025);
+  }
+
+  .table-wrap::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,var(--accent),var(--accent-bright),var(--accent),transparent);
+    opacity:.28;
+  }
+
+  .scroll-hint {
+    display:none;
+    font-family:'Share Tech Mono',monospace;
+    font-size:9px; letter-spacing:2px; color:var(--text-muted);
+    text-align:right; padding:5px 14px 0; text-transform:uppercase;
+  }
+
+  table { width:100%; border-collapse:collapse; min-width:540px; }
+
+  /* ══════════════════════
+     THEAD
+  ══════════════════════ */
+  thead tr { background:rgba(74,142,245,0.07); }
+
+  thead th {
+    font-family:'Share Tech Mono',monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:2px; text-transform:uppercase;
+    color:var(--accent); padding:clamp(10px,1.5vw,14px) clamp(12px,2vw,20px);
+    text-align:left; border-bottom:1px solid rgba(74,142,245,0.18);
+    font-weight:400; white-space:nowrap;
+  }
+
+  /* ══════════════════════
+     TBODY
+  ══════════════════════ */
+  tbody tr {
+    border-bottom:1px solid rgba(255,255,255,0.04);
+    transition:background .18s;
+  }
+  tbody tr:nth-child(even) { background:rgba(255,255,255,0.012); }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:rgba(74,142,245,0.05); }
+
+  td {
+    padding:clamp(11px,1.5vw,16px) clamp(12px,2vw,20px);
+    vertical-align:middle;
+    font-size:clamp(12px,1.6vw,13.5px);
+  }
+
+  /* left stripe per category */
+  .bc-0  td { border-left:3px solid var(--c0); }
+  .bc-1  td { border-left:3px solid var(--c1); }
+  .bc-2  td { border-left:3px solid var(--c2); }
+  .bc-3  td { border-left:3px solid var(--c3); }
+  .bc-4a td { border-left:3px solid var(--c4a); }
+  .bc-4b td { border-left:3px solid var(--c4b); }
+  .bc-4c td { border-left:3px solid var(--c4c); }
+  .bc-5  td { border-left:3px solid var(--c5); }
+  .bc-6  td { border-left:3px solid var(--c6); }
+
+  /* sub-divider */
+  .sub-divider td {
+    padding:clamp(6px,1vw,9px) clamp(12px,2vw,20px);
+    background:rgba(255,255,255,0.02);
+    border-left:3px solid rgba(255,255,255,0.07);
+  }
+  .sub-divider-label {
+    font-family:'Share Tech Mono',monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:2.5px;
+    text-transform:uppercase; opacity:.38;
+  }
+
+  /* ── Category badge ── */
+  .cat-badge {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:clamp(42px,5.5vw,58px); height:clamp(28px,3.5vw,36px); padding:0 8px;
+    border-radius:6px; border:1.5px solid;
+    font-family:'Rajdhani',sans-serif;
+    font-size:clamp(14px,2vw,18px); font-weight:700; letter-spacing:1px;
+    white-space:nowrap;
+  }
+
+  /* ── Name cell ── */
+  .name-main { font-weight:600; font-size:clamp(12px,1.7vw,14px); color:var(--text-primary); display:block; }
+  .name-sub  { font-family:'Share Tech Mono',monospace; font-size:clamp(8px,1.1vw,10px); letter-spacing:1.5px; color:var(--text-muted); margin-top:2px; display:block; }
+
+  /* ── Risk bar ── */
+  .risk-wrap  { display:flex; flex-direction:column; gap:5px; }
+  .risk-label { font-family:'Share Tech Mono',monospace; font-size:clamp(11px,1.5vw,14px); font-weight:700; letter-spacing:1px; }
+  .risk-bar-bg { width:100%; min-width:55px; height:5px; background:rgba(255,255,255,0.07); border-radius:4px; overflow:hidden; }
+  .risk-bar-fill { height:100%; border-radius:4px; }
+
+  /* ── Description ── */
+  .desc-text { font-size:clamp(11.5px,1.5vw,13px); color:var(--text-sec); line-height:1.55; }
+
+  /* ── Action tag ── */
+  .tag {
+    display:inline-block; padding:clamp(3px,0.4vw,5px) clamp(8px,1.2vw,12px);
+    border-radius:4px; font-family:'Share Tech Mono',monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:1.5px; text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  /* ══════════════════════
+     IMAGING MODALITIES GRID
+  ══════════════════════ */
+  .mod-grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:clamp(10px,2vw,16px);
+    margin-bottom:clamp(18px,3vw,28px);
+  }
+
+  .mod-card {
+    background:var(--bg-panel);
+    border:1px solid rgba(74,142,245,0.13);
+    border-radius:10px;
+    padding:clamp(14px,2.2vw,22px) clamp(14px,2vw,20px);
+    position:relative; overflow:hidden;
+    box-shadow:0 8px 28px rgba(0,0,0,0.4);
+  }
+
+  .mod-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  }
+  .mod-card.mmg::before  { background:linear-gradient(90deg,transparent,var(--s1),transparent); }
+  .mod-card.us::before   { background:linear-gradient(90deg,transparent,var(--s2),transparent); }
+  .mod-card.mri::before  { background:linear-gradient(90deg,transparent,var(--s3),transparent); }
+
+  .mod-icon  { font-family:'Rajdhani',sans-serif; font-size:clamp(18px,3vw,26px); font-weight:700; margin-bottom:6px; }
+  .mod-title { font-size:clamp(12px,1.6vw,14px); font-weight:600; color:var(--text-primary); }
+  .mod-note  { font-family:'Share Tech Mono',monospace; font-size:clamp(8px,1.1vw,10px); color:var(--text-muted); letter-spacing:1px; margin-top:4px; line-height:1.5; }
+
+  /* ══════════════════════
+     FOOTER
+  ══════════════════════ */
+  .footer {
+    display:flex; flex-wrap:wrap; gap:8px;
+    align-items:center; justify-content:space-between;
+    padding:clamp(10px,1.8vw,14px) clamp(14px,2.5vw,20px);
+    background:rgba(0,0,0,0.3);
+    border:1px solid rgba(74,142,245,0.1);
+    border-radius:8px; margin-top:4px;
+  }
+  .footer-note  { font-family:'Share Tech Mono',monospace; font-size:clamp(8px,1.1vw,10px); color:var(--text-muted); letter-spacing:1px; }
+  .footer-brand { font-family:'Rajdhani',sans-serif; font-size:clamp(10px,1.5vw,13px); color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; }
+
+  /* ══════════════════════
+     RESPONSIVE
+  ══════════════════════ */
+  @media (max-width:900px) {
+    .summary-grid { grid-template-columns:repeat(2,1fr); }
+    .mod-grid { grid-template-columns:repeat(3,1fr); }
+    .section-desc { display:none; }
+    .scroll-hint { display:block; }
+  }
+
+  @media (max-width:640px) {
+    .summary-grid { grid-template-columns:repeat(2,1fr); }
+    .mod-grid { grid-template-columns:1fr; }
+    thead th:nth-child(4), td:nth-child(4) { display:none; }
+  }
+
+  @media (max-width:460px) {
+    .summary-grid { grid-template-columns:1fr 1fr; }
+
+    .sum-card { padding:12px 12px; }
+
+    thead th:nth-child(4), td:nth-child(4) { display:none; }
+    thead th:nth-child(5), td:nth-child(5) { display:none; }
+  }
+
+  @media (min-width:1100px) {
+    table { min-width:unset; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ══════════ HEADER ══════════ -->
+  <div class="header">
+    <div class="header-eyebrow">Breast Imaging Reporting &amp; Data System · ACR 5th Edition</div>
+    <h1>BI-RADS Classification</h1>
+    <div class="header-sub">Malignancy Risk Assessment · Mammography · Ultrasound · MRI</div>
+    <div class="header-line"></div>
+  </div>
+
+
+  <!-- ══════════ SUMMARY CARDS ══════════ -->
+  <div class="summary-grid">
+
+    <div class="sum-card c-benign">
+      <div class="sum-card-eye">Categories</div>
+      <div class="sum-card-cat" style="color:var(--c2);">0 – 2</div>
+      <div class="sum-card-lbl" style="color:var(--c2);">Benign / Incomplete</div>
+      <div class="sum-card-risk">Risk: 0% (defined benign)</div>
+    </div>
+
+    <div class="sum-card c-prob">
+      <div class="sum-card-eye">Category</div>
+      <div class="sum-card-cat" style="color:var(--c3);">3</div>
+      <div class="sum-card-lbl" style="color:var(--c3);">Probably Benign</div>
+      <div class="sum-card-risk">Risk: &lt; 2% malignancy</div>
+    </div>
+
+    <div class="sum-card c-susp">
+      <div class="sum-card-eye">Category</div>
+      <div class="sum-card-cat" style="color:var(--c4b);">4A–C</div>
+      <div class="sum-card-lbl" style="color:var(--c4b);">Suspicious</div>
+      <div class="sum-card-risk">Risk: 2% – 95%</div>
+    </div>
+
+    <div class="sum-card c-mal">
+      <div class="sum-card-eye">Categories</div>
+      <div class="sum-card-cat" style="color:var(--c5);">5 – 6</div>
+      <div class="sum-card-lbl" style="color:var(--c5);">Malignant</div>
+      <div class="sum-card-risk">Risk: ≥ 95% / Known</div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════ SECTION 1 — CLASSIFICATION TABLE ══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s1);">
+      <span class="section-letter" style="color:var(--s1);">①</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s1);">Category Classification &amp; Malignancy Risk</span>
+        <span class="section-desc">BI-RADS 0 through 6 · Applies to Mammography, Ultrasound &amp; MRI · Subcategories 4A, 4B, 4C</span>
+      </div>
+    </div>
+    <div class="scroll-hint">← scroll to see more →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(70px,9vw,100px);">Category</th>
+          <th style="width:clamp(140px,20vw,190px);">Assessment</th>
+          <th style="width:clamp(95px,13vw,130px);">Malignancy Risk</th>
+          <th>Clinical Interpretation</th>
+          <th style="width:clamp(130px,16vw,180px);">Recommended Action</th>
+        </tr></thead>
+        <tbody>
+
+          <!-- 0 -->
+          <tr class="bc-0">
+            <td><div class="cat-badge" style="color:var(--c0);border-color:var(--c0);background:rgba(96,125,139,0.1);">0</div></td>
+            <td><span class="name-main">Incomplete</span><span class="name-sub">NEEDS EVALUATION</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c0);">—</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:3%;background:var(--c0);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">Requires additional imaging evaluation and/or prior mammograms for comparison; assessment cannot be completed from current images alone</span></td>
+            <td><span class="tag" style="background:rgba(96,125,139,0.12);color:var(--c0);border:1px solid rgba(96,125,139,0.28);">Additional Imaging</span></td>
+          </tr>
+
+          <!-- 1 -->
+          <tr class="bc-1">
+            <td><div class="cat-badge" style="color:var(--c1);border-color:var(--c1);background:rgba(38,200,126,0.1);">1</div></td>
+            <td><span class="name-main">Negative</span><span class="name-sub">NO ABNORMALITY</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c1);">0%</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:1%;background:var(--c1);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">No abnormality detected; breasts are symmetric; no masses, architectural distortion or suspicious calcifications identified on imaging</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--c1);border:1px solid rgba(38,200,126,0.28);">Routine Screening</span></td>
+          </tr>
+
+          <!-- 2 -->
+          <tr class="bc-2">
+            <td><div class="cat-badge" style="color:var(--c2);border-color:var(--c2);background:rgba(0,224,150,0.1);">2</div></td>
+            <td><span class="name-main">Benign</span><span class="name-sub">DEFINITELY BENIGN</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c2);">0%</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:1%;background:var(--c2);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">Benign findings recorded for reference; includes simple cysts, intramammary lymph nodes, stable fat-containing lesions, fibroadenomas with calcifications</span></td>
+            <td><span class="tag" style="background:rgba(0,224,150,0.1);color:var(--c2);border:1px solid rgba(0,224,150,0.28);">Routine Screening</span></td>
+          </tr>
+
+          <!-- 3 -->
+          <tr class="bc-3">
+            <td><div class="cat-badge" style="color:var(--c3);border-color:var(--c3);background:rgba(240,200,64,0.1);">3</div></td>
+            <td><span class="name-main">Probably Benign</span><span class="name-sub">SHORT-TERM FOLLOW-UP</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c3);">&lt; 2%</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:8%;background:var(--c3);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">Finding has high probability of being benign; not expected to change, but short-term follow-up is prudent to confirm stability; biopsy if stability not confirmed at 2–3 years</span></td>
+            <td><span class="tag" style="background:rgba(240,200,64,0.1);color:var(--c3);border:1px solid rgba(240,200,64,0.28);">6-Month Follow-Up</span></td>
+          </tr>
+
+          <!-- C4 sub-divider -->
+          <tr class="sub-divider">
+            <td colspan="5"><span class="sub-divider-label">◆ Category 4 — Suspicious (Subdivided 4A · 4B · 4C) · Tissue sampling recommended for all</span></td>
+          </tr>
+
+          <!-- 4A -->
+          <tr class="bc-4a">
+            <td><div class="cat-badge" style="color:var(--c4a);border-color:var(--c4a);background:rgba(244,167,51,0.1);font-size:clamp(12px,1.7vw,15px);">4A</div></td>
+            <td><span class="name-main">Low Suspicion</span><span class="name-sub">BIOPSY RECOMMENDED</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c4a);">2 – 10%</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:18%;background:var(--c4a);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">Low suspicion for malignancy; requires tissue sampling; if benign concordant result obtained, 6-month follow-up imaging is acceptable management</span></td>
+            <td><span class="tag" style="background:rgba(244,167,51,0.1);color:var(--c4a);border:1px solid rgba(244,167,51,0.28);">Tissue Biopsy</span></td>
+          </tr>
+
+          <!-- 4B -->
+          <tr class="bc-4b">
+            <td><div class="cat-badge" style="color:var(--c4b);border-color:var(--c4b);background:rgba(240,112,48,0.1);font-size:clamp(12px,1.7vw,15px);">4B</div></td>
+            <td><span class="name-main">Moderate Suspicion</span><span class="name-sub">BIOPSY REQUIRED</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c4b);">10 – 50%</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:42%;background:var(--c4b);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">Moderate suspicion; tissue sampling required; close radiologic-pathologic correlation is essential; discordant benign result requires repeat biopsy or surgical excision</span></td>
+            <td><span class="tag" style="background:rgba(240,112,48,0.1);color:var(--c4b);border:1px solid rgba(240,112,48,0.28);">Biopsy + Correlation</span></td>
+          </tr>
+
+          <!-- 4C -->
+          <tr class="bc-4c">
+            <td><div class="cat-badge" style="color:var(--c4c);border-color:var(--c4c);background:rgba(232,48,48,0.1);font-size:clamp(12px,1.7vw,15px);">4C</div></td>
+            <td><span class="name-main">High Suspicion</span><span class="name-sub">STRONGLY SUSPICIOUS</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c4c);">50 – 95%</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:72%;background:var(--c4c);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">High suspicion; malignant pathology result expected; discordant benign histology should prompt immediate repeat biopsy or surgical referral without delay</span></td>
+            <td><span class="tag" style="background:rgba(232,48,48,0.12);color:var(--c4c);border:1px solid rgba(232,48,48,0.3);">Urgent Biopsy</span></td>
+          </tr>
+
+          <!-- 5 -->
+          <tr class="bc-5">
+            <td><div class="cat-badge" style="color:var(--c5);border-color:var(--c5);background:rgba(196,32,32,0.1);">5</div></td>
+            <td><span class="name-main">Highly Suggestive</span><span class="name-sub">OF MALIGNANCY</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c5);">≥ 95%</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:92%;background:var(--c5);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">Highly suggestive of malignancy; appropriate action should be taken; biopsy required; neoadjuvant systemic therapy may be initiated prior to definitive surgical management</span></td>
+            <td><span class="tag" style="background:rgba(196,32,32,0.14);color:var(--c5);border:1px solid rgba(196,32,32,0.35);">Biopsy + Treatment</span></td>
+          </tr>
+
+          <!-- 6 -->
+          <tr class="bc-6">
+            <td><div class="cat-badge" style="color:var(--c6);border-color:var(--c6);background:rgba(139,26,139,0.12);">6</div></td>
+            <td><span class="name-main">Known Malignancy</span><span class="name-sub">BIOPSY-PROVEN</span></td>
+            <td>
+              <div class="risk-wrap">
+                <span class="risk-label" style="color:var(--c6);">N/A</span>
+                <div class="risk-bar-bg"><div class="risk-bar-fill" style="width:100%;background:var(--c6);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text">Biopsy-proven malignancy prior to definitive therapy; imaging used to assess extent of disease, treatment response to neoadjuvant chemotherapy, or pre-surgical planning</span></td>
+            <td><span class="tag" style="background:rgba(139,26,139,0.14);color:var(--c6);border:1px solid rgba(139,26,139,0.35);">Surgical / Oncology</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ══════════ SECTION 2 — IMAGING MODALITIES ══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s2);">
+      <span class="section-letter" style="color:var(--s2);">②</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s2);">Imaging Modalities &amp; Lexicon Application</span>
+        <span class="section-desc">BI-RADS lexicon applied across all three breast imaging modalities with modality-specific descriptors</span>
+      </div>
+    </div>
+    <div class="scroll-hint">← scroll to see more →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(100px,14vw,150px);">Modality</th>
+          <th style="width:clamp(130px,18vw,180px);">Primary Use</th>
+          <th style="width:clamp(130px,16vw,160px);">Key Descriptors</th>
+          <th>Modality-Specific Notes</th>
+        </tr></thead>
+        <tbody>
+
+          <tr style="border-left:3px solid var(--s1);">
+            <td><span class="name-main" style="color:var(--s1);">Mammography</span><span class="name-sub">2D / 3D TOMO</span></td>
+            <td><span class="desc-text">Primary screening modality; annual screening from age 40–50 (guideline-dependent); diagnostic mammography for symptomatic patients</span></td>
+            <td><span class="tag" style="background:rgba(74,142,245,0.1);color:var(--s1);border:1px solid rgba(74,142,245,0.25);">Masses · Calcifications</span></td>
+            <td><span class="desc-text">Describes masses (shape, margin, density), calcifications (morphology, distribution), architectural distortion, asymmetries. Tomosynthesis (3D) reduces recall rates and improves cancer detection vs 2D alone.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--s2);">
+            <td><span class="name-main" style="color:var(--s2);">Ultrasound</span><span class="name-sub">TARGETED / WHOLE BREAST</span></td>
+            <td><span class="desc-text">Problem-solving for mammographic findings; first-line in patients &lt;30 years or pregnant; characterises palpable lumps; guides biopsy procedures</span></td>
+            <td><span class="tag" style="background:rgba(155,107,223,0.1);color:var(--s2);border:1px solid rgba(155,107,223,0.25);">Shape · Margin · Echo</span></td>
+            <td><span class="desc-text">Assesses mass shape (oval/round/irregular), orientation, margin (circumscribed/spiculated), echo pattern (anechoic/hypoechoic), posterior acoustic features. Elastography adjunct for stiffness characterisation.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--s3);">
+            <td><span class="name-main" style="color:var(--s3);">Breast MRI</span><span class="name-sub">CONTRAST-ENHANCED</span></td>
+            <td><span class="desc-text">High-risk screening (BRCA carriers); pre-surgical staging; evaluate treatment response; occult primary breast cancer; implant integrity assessment</span></td>
+            <td><span class="tag" style="background:rgba(223,155,107,0.1);color:var(--s3);border:1px solid rgba(223,155,107,0.25);">Kinetics · Enhancement</span></td>
+            <td><span class="desc-text">Evaluates focus, mass, non-mass enhancement (NME); kinetic curve analysis (initial rise + delayed phase); background parenchymal enhancement (BPE); highest sensitivity (~95%) but lower specificity than mammography.</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ══════════ SECTION 3 — MANAGEMENT PATHWAY ══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s3);">
+      <span class="section-letter" style="color:var(--s3);">③</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s3);">Clinical Management Pathway</span>
+        <span class="section-desc">Action steps, follow-up intervals, and biopsy decision criteria per BI-RADS category</span>
+      </div>
+    </div>
+    <div class="scroll-hint">← scroll to see more →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(70px,9vw,100px);">Category</th>
+          <th style="width:clamp(120px,16vw,160px);">Immediate Action</th>
+          <th style="width:clamp(120px,16vw,150px);">Follow-Up Interval</th>
+          <th>Pathway Detail &amp; Rationale</th>
+        </tr></thead>
+        <tbody>
+
+          <tr class="bc-0">
+            <td><div class="cat-badge" style="color:var(--c0);border-color:var(--c0);background:rgba(96,125,139,0.1);">0</div></td>
+            <td><span class="tag" style="background:rgba(96,125,139,0.1);color:var(--c0);border:1px solid rgba(96,125,139,0.25);">Recall / Add Views</span></td>
+            <td><span class="desc-text">Immediate / ASAP</span></td>
+            <td><span class="desc-text">Obtain additional imaging: spot compression, magnification views, ultrasound correlation, or comparison with prior studies. Do not issue a management recommendation until assessment is complete.</span></td>
+          </tr>
+
+          <tr class="bc-1">
+            <td><div class="cat-badge" style="color:var(--c1);border-color:var(--c1);background:rgba(38,200,126,0.1);">1</div></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--c1);border:1px solid rgba(38,200,126,0.25);">Routine Screening</span></td>
+            <td><span class="desc-text">Annual (age-appropriate)</span></td>
+            <td><span class="desc-text">Continue age-appropriate routine mammographic screening. No additional workup required. Negative report should explicitly state no abnormality to reduce patient anxiety.</span></td>
+          </tr>
+
+          <tr class="bc-2">
+            <td><div class="cat-badge" style="color:var(--c2);border-color:var(--c2);background:rgba(0,224,150,0.1);">2</div></td>
+            <td><span class="tag" style="background:rgba(0,224,150,0.1);color:var(--c2);border:1px solid rgba(0,224,150,0.25);">Routine Screening</span></td>
+            <td><span class="desc-text">Annual (age-appropriate)</span></td>
+            <td><span class="desc-text">Benign finding documented for radiological record. No biopsy or additional imaging required. Examples: simple cysts, oil cysts, milk of calcium, fibroadenoma with coarse calcifications.</span></td>
+          </tr>
+
+          <tr class="bc-3">
+            <td><div class="cat-badge" style="color:var(--c3);border-color:var(--c3);background:rgba(240,200,64,0.1);">3</div></td>
+            <td><span class="tag" style="background:rgba(240,200,64,0.1);color:var(--c3);border:1px solid rgba(240,200,64,0.25);">Short-Interval Imaging</span></td>
+            <td><span class="desc-text">6 months → 12 → 24 months</span></td>
+            <td><span class="desc-text">Initial 6-month follow-up of affected breast, then bilateral imaging at 12 and 24 months. If stable over 2–3 years → upgrade to BI-RADS 2. If increased in size or changed morphology → upgrade to BI-RADS 4 and biopsy.</span></td>
+          </tr>
+
+          <tr class="bc-4a">
+            <td><div class="cat-badge" style="color:var(--c4a);border-color:var(--c4a);background:rgba(244,167,51,0.1);font-size:clamp(12px,1.7vw,15px);">4A</div></td>
+            <td><span class="tag" style="background:rgba(244,167,51,0.1);color:var(--c4a);border:1px solid rgba(244,167,51,0.25);">Tissue Sampling</span></td>
+            <td><span class="desc-text">Post-biopsy 6-month follow-up</span></td>
+            <td><span class="desc-text">Core needle biopsy (CNB) or vacuum-assisted biopsy (VAB). If result is benign and concordant with imaging → 6-month short-interval follow-up acceptable. Discordant result → repeat sampling.</span></td>
+          </tr>
+
+          <tr class="bc-4b">
+            <td><div class="cat-badge" style="color:var(--c4b);border-color:var(--c4b);background:rgba(240,112,48,0.1);font-size:clamp(12px,1.7vw,15px);">4B</div></td>
+            <td><span class="tag" style="background:rgba(240,112,48,0.1);color:var(--c4b);border:1px solid rgba(240,112,48,0.25);">Biopsy + Correlation</span></td>
+            <td><span class="desc-text">Pathology review within 5 days</span></td>
+            <td><span class="desc-text">CNB mandatory; close radiologic-pathologic correlation required. Benign concordant result may be followed; discordant or high-risk histology (ADH, ALH) requires surgical excision or MDT discussion.</span></td>
+          </tr>
+
+          <tr class="bc-4c">
+            <td><div class="cat-badge" style="color:var(--c4c);border-color:var(--c4c);background:rgba(232,48,48,0.1);font-size:clamp(12px,1.7vw,15px);">4C</div></td>
+            <td><span class="tag" style="background:rgba(232,48,48,0.12);color:var(--c4c);border:1px solid rgba(232,48,48,0.3);">Urgent Biopsy</span></td>
+            <td><span class="desc-text">Urgent pathology review</span></td>
+            <td><span class="desc-text">CNB with clip marker placement; urgent pathology review. Any benign result that is discordant with high-suspicion imaging requires immediate repeat biopsy or surgical excision — do not accept discordant benign results.</span></td>
+          </tr>
+
+          <tr class="bc-5">
+            <td><div class="cat-badge" style="color:var(--c5);border-color:var(--c5);background:rgba(196,32,32,0.1);">5</div></td>
+            <td><span class="tag" style="background:rgba(196,32,32,0.14);color:var(--c5);border:1px solid rgba(196,32,32,0.35);">Biopsy + Oncology</span></td>
+            <td><span class="desc-text">MDT referral within 2 weeks</span></td>
+            <td><span class="desc-text">CNB with marker clip; refer to breast MDT. Neoadjuvant chemotherapy may be initiated after biopsy confirmation to downstage disease before surgery. Staging CT/PET may be indicated.</span></td>
+          </tr>
+
+          <tr class="bc-6">
+            <td><div class="cat-badge" style="color:var(--c6);border-color:var(--c6);background:rgba(139,26,139,0.12);">6</div></td>
+            <td><span class="tag" style="background:rgba(139,26,139,0.14);color:var(--c6);border:1px solid rgba(139,26,139,0.35);">Active Treatment</span></td>
+            <td><span class="desc-text">Interim response imaging</span></td>
+            <td><span class="desc-text">Imaging used to assess extent of disease, tumour response to neoadjuvant chemotherapy (mid-treatment and pre-surgical), and surgical planning (BCS vs mastectomy). MRI preferred for treatment response assessment.</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ══════════ SECTION 4 — CLINICAL PEARLS ══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s4);">
+      <span class="section-letter" style="color:var(--s4);">④</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s4);">Clinical Pearls, Pitfalls &amp; Special Populations</span>
+        <span class="section-desc">Key considerations for accurate BI-RADS assignment and safe patient management</span>
+      </div>
+    </div>
+    <div class="scroll-hint">← scroll to see more →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(80px,11vw,120px);">Type</th>
+          <th style="width:clamp(140px,20vw,200px);">Topic</th>
+          <th>Detail</th>
+        </tr></thead>
+        <tbody>
+
+          <tr style="border-left:3px solid var(--c2);">
+            <td><span class="tag" style="background:rgba(0,224,150,0.09);color:var(--c2);border:1px solid rgba(0,224,150,0.25);">Pearl</span></td>
+            <td><span class="name-main">Dense Breast Tissue</span></td>
+            <td><span class="desc-text">Heterogeneously or extremely dense breasts (ACR C/D) reduce mammographic sensitivity to ~40–60%. Supplemental ultrasound or MRI screening should be discussed. Dense tissue is an independent risk factor for breast cancer.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--c2);">
+            <td><span class="tag" style="background:rgba(0,224,150,0.09);color:var(--c2);border:1px solid rgba(0,224,150,0.25);">Pearl</span></td>
+            <td><span class="name-main">High-Risk Screening</span></td>
+            <td><span class="desc-text">Patients with ≥20% lifetime risk (BRCA1/2, TP53, strong family history) should receive annual breast MRI in addition to mammography from age 25–30. MRI sensitivity ~95% vs mammography ~40% in BRCA carriers.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--c3);">
+            <td><span class="tag" style="background:rgba(240,200,64,0.09);color:var(--c3);border:1px solid rgba(240,200,64,0.25);">Caution</span></td>
+            <td><span class="name-main">BI-RADS 3 in Diagnostic Setting</span></td>
+            <td><span class="desc-text">BI-RADS 3 should not be assigned in a diagnostic (symptomatic) setting or after incomplete workup. It is only appropriate when additional views and ultrasound correlation have been performed and the probability of malignancy is demonstrably &lt;2%.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--c3);">
+            <td><span class="tag" style="background:rgba(240,200,64,0.09);color:var(--c3);border:1px solid rgba(240,200,64,0.25);">Caution</span></td>
+            <td><span class="name-main">Pregnancy &amp; Lactation</span></td>
+            <td><span class="desc-text">Ultrasound is first-line in pregnant/lactating women. Mammography is safe during pregnancy (low radiation dose). MRI without gadolinium acceptable; gadolinium contrast avoided in first trimester; used cautiously thereafter.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--c4b);">
+            <td><span class="tag" style="background:rgba(240,112,48,0.09);color:var(--c4b);border:1px solid rgba(240,112,48,0.25);">Pitfall</span></td>
+            <td><span class="name-main">Discordant Pathology</span></td>
+            <td><span class="desc-text">Radiologic-pathologic discordance is the most critical pitfall: a benign biopsy result for a BI-RADS 4C or 5 lesion must NOT be accepted. False negative CNB rates of 1–3% exist; discordance mandates repeat sampling or surgical excision.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--c4b);">
+            <td><span class="tag" style="background:rgba(240,112,48,0.09);color:var(--c4b);border:1px solid rgba(240,112,48,0.25);">Pitfall</span></td>
+            <td><span class="name-main">Bilateral Synchronous Lesions</span></td>
+            <td><span class="desc-text">Assign individual BI-RADS category to each lesion and each breast. The overall assessment should reflect the most actionable (highest) category finding. Do not average or combine findings from different breasts.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--c5);">
+            <td><span class="tag" style="background:rgba(196,32,32,0.1);color:var(--c5);border:1px solid rgba(196,32,32,0.28);">Limitation</span></td>
+            <td><span class="name-main">Male Breast Disease</span></td>
+            <td><span class="desc-text">BI-RADS lexicon is validated primarily in females. Application in male breast is extrapolated. Gynaecomastia can be BI-RADS 2 if classic subareolar pattern. Eccentric, hard or ulcerated lesions should be promptly biopsied regardless of imaging appearance.</span></td>
+          </tr>
+
+          <tr style="border-left:3px solid var(--c5);">
+            <td><span class="tag" style="background:rgba(196,32,32,0.1);color:var(--c5);border:1px solid rgba(196,32,32,0.28);">Limitation</span></td>
+            <td><span class="name-main">Implants</span></td>
+            <td><span class="desc-text">Standard 2-view mammography is supplemented by implant-displaced (Eklund) views. Breast tissue posterior to implant may be incompletely visualised. Ultrasound and MRI are adjuncts for implant integrity and parenchymal evaluation.</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <div class="footer">
+    <span class="footer-note">ACR BI-RADS® Atlas, 5th Edition (2013) · D'Orsi CJ et al. · Applies to Mammography, Ultrasound &amp; MRI · Updated guidelines 2024</span>
+    <span class="footer-brand">Radiology · Breast Imaging Reference</span>
+  </div>
+
+</div>
+</body>
+</html>
