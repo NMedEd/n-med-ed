@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wells Score for DVT</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Variables ── */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg-deep:      #06090f;
+    --bg-panel:     #0b1220;
+    --bg-row-alt:   #0e1828;
+    --border-glow:  #1a3a6a;
+    --accent:       #3d9be9;
+    --accent-bright:#60c0ff;
+    --text-primary: #deeeff;
+    --text-sec:     #6a9ec8;
+    --text-muted:   #2d5878;
+
+    /* score point colours */
+    --plus1:  #26c87e;
+    --plus2:  #f0c040;
+    --minus2: #e84040;
+
+    /* probability bands */
+    --low:    #26c87e;
+    --mod:    #f0a030;
+    --high:   #e04040;
+
+    /* section accents */
+    --s-crit:  #3d9be9;
+    --s-score: #9b6bdf;
+    --s-prob:  #df6b6b;
+    --s-mgmt:  #6bdf9b;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg-deep);
+    font-family: 'Exo 2', sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: clamp(20px, 4vw, 48px) clamp(12px, 3vw, 28px);
+    background-image:
+      radial-gradient(ellipse 90% 40% at 50% -5%, rgba(61,155,233,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 25% at 90% 90%, rgba(96,192,255,0.04) 0%, transparent 50%);
+  }
+
+  .wrapper { width:100%; max-width:1040px; margin:0 auto; }
+
+  /* ══════════════════════════════
+     HEADER
+  ══════════════════════════════ */
+  .header { text-align:center; margin-bottom:clamp(24px,4vw,40px); }
+
+  .header-eyebrow {
+    font-family:'Share Tech Mono', monospace;
+    font-size:clamp(9px,1.5vw,11px);
+    letter-spacing:clamp(2px,0.5vw,4px);
+    color:var(--accent-bright);
+    text-transform:uppercase; margin-bottom:10px; opacity:.8;
+  }
+
+  .header h1 {
+    font-family:'Rajdhani', sans-serif;
+    font-size:clamp(24px,6vw,48px);
+    font-weight:700; letter-spacing:clamp(1px,0.4vw,3px);
+    text-transform:uppercase; line-height:1;
+    background:linear-gradient(135deg,#deeeff 0%,#3d9be9 50%,#60c0ff 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+
+  .header-sub {
+    font-size:clamp(11px,1.8vw,13px); color:var(--text-sec);
+    letter-spacing:clamp(1px,0.3vw,2px); margin-top:8px; font-weight:300;
+  }
+
+  .header-line {
+    width:clamp(120px,30vw,220px); height:1px;
+    background:linear-gradient(90deg,transparent,var(--accent-bright),transparent);
+    margin:16px auto 0;
+  }
+
+  /* ══════════════════════════════
+     SECTION BLOCKS
+  ══════════════════════════════ */
+  .section-block { margin-bottom:clamp(20px,3vw,30px); }
+
+  .section-header {
+    display:flex; align-items:center; gap:clamp(8px,2vw,16px);
+    padding:clamp(10px,1.8vw,14px) clamp(14px,2.5vw,22px);
+    background:rgba(61,155,233,0.05);
+    border-left:4px solid;
+    border-radius:8px 8px 0 0;
+  }
+
+  .section-letter {
+    font-family:'Rajdhani', sans-serif;
+    font-size:clamp(22px,4vw,34px); font-weight:700; line-height:1;
+    flex-shrink:0;
+  }
+
+  .section-title-wrap { display:flex; flex-direction:column; min-width:0; }
+
+  .section-title {
+    font-family:'Rajdhani', sans-serif;
+    font-size:clamp(13px,2.2vw,17px);
+    font-weight:700; letter-spacing:clamp(1px,0.3vw,2px); text-transform:uppercase;
+  }
+
+  .section-desc {
+    font-family:'Share Tech Mono', monospace;
+    font-size:clamp(8px,1.2vw,10px); letter-spacing:1px; opacity:.55;
+    margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* ══════════════════════════════
+     TABLE WRAP
+  ══════════════════════════════ */
+  .table-wrap {
+    background:var(--bg-panel);
+    border:1px solid rgba(61,155,233,0.15);
+    border-top:none; border-radius:0 0 10px 10px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    position:relative;
+    box-shadow:0 16px 50px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .table-wrap::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,var(--accent),var(--accent-bright),var(--accent),transparent);
+    opacity:.3;
+  }
+
+  /* scroll hint on small screens */
+  .scroll-hint {
+    display:none;
+    font-family:'Share Tech Mono', monospace;
+    font-size:9px; letter-spacing:2px; color:var(--text-muted);
+    text-align:right; padding:5px 14px 0; text-transform:uppercase;
+  }
+
+  table { width:100%; border-collapse:collapse; min-width:520px; }
+
+  /* ══════════════════════════════
+     TABLE HEAD
+  ══════════════════════════════ */
+  thead tr { background:rgba(61,155,233,0.07); }
+
+  thead th {
+    font-family:'Share Tech Mono', monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:2px; text-transform:uppercase;
+    color:var(--accent); padding:clamp(10px,1.5vw,14px) clamp(12px,2vw,20px);
+    text-align:left; border-bottom:1px solid rgba(61,155,233,0.2);
+    font-weight:400; white-space:nowrap;
+  }
+
+  /* ══════════════════════════════
+     TABLE BODY
+  ══════════════════════════════ */
+  tbody tr {
+    border-bottom:1px solid rgba(255,255,255,0.04);
+    transition:background .18s;
+  }
+  tbody tr:nth-child(even) { background:rgba(255,255,255,0.014); }
+  tbody tr:last-child { border-bottom:none; }
+  tbody tr:hover { background:rgba(61,155,233,0.05); }
+
+  td {
+    padding:clamp(10px,1.5vw,15px) clamp(12px,2vw,20px);
+    vertical-align:middle;
+    font-size:clamp(12px,1.6vw,13.5px);
+  }
+
+  /* left accent stripe */
+  .stripe-plus1  td { border-left:3px solid var(--plus1); }
+  .stripe-plus2  td { border-left:3px solid var(--plus2); }
+  .stripe-minus2 td { border-left:3px solid var(--minus2); }
+  .stripe-low    td { border-left:3px solid var(--low); }
+  .stripe-mod    td { border-left:3px solid var(--mod); }
+  .stripe-high   td { border-left:3px solid var(--high); }
+  .stripe-accent td { border-left:3px solid var(--accent); }
+
+  /* ── Criterion name ── */
+  .crit-main { font-weight:600; font-size:clamp(12px,1.7vw,14px); color:var(--text-primary); display:block; }
+  .crit-sub  { font-family:'Share Tech Mono',monospace; font-size:clamp(8px,1.1vw,10px); letter-spacing:1.5px; color:var(--text-muted); margin-top:2px; display:block; }
+
+  /* ── Score pill ── */
+  .score-pill {
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:clamp(40px,6vw,56px); height:clamp(28px,3.5vw,34px);
+    padding:0 8px; border-radius:6px; border:1.5px solid;
+    font-family:'Share Tech Mono', monospace;
+    font-size:clamp(13px,1.8vw,16px); font-weight:700; letter-spacing:1px;
+    white-space:nowrap;
+  }
+
+  /* ── Description ── */
+  .desc-text { font-size:clamp(11.5px,1.5vw,13px); color:var(--text-sec); line-height:1.55; }
+
+  /* ── Category tag ── */
+  .tag {
+    display:inline-block; padding:clamp(3px,0.4vw,5px) clamp(8px,1.2vw,12px);
+    border-radius:4px; font-family:'Share Tech Mono',monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:1.5px; text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  /* sub-divider row */
+  .sub-divider td {
+    padding:clamp(6px,1vw,9px) clamp(12px,2vw,20px);
+    background:rgba(255,255,255,0.02);
+    border-left:3px solid rgba(255,255,255,0.08);
+  }
+  .sub-divider-label {
+    font-family:'Share Tech Mono',monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:2.5px;
+    text-transform:uppercase; opacity:.4;
+  }
+
+  /* ── Probability bar ── */
+  .prob-wrap { display:flex; flex-direction:column; gap:5px; }
+  .prob-label {
+    font-family:'Share Tech Mono',monospace;
+    font-size:clamp(11px,1.5vw,13px); font-weight:700; letter-spacing:1px;
+  }
+  .prob-bar-bg {
+    width:100%; min-width:60px; height:5px;
+    background:rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;
+  }
+  .prob-bar-fill { height:100%; border-radius:4px; }
+
+  /* ══════════════════════════════
+     SCORE SUMMARY CARD
+  ══════════════════════════════ */
+  .summary-grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:clamp(10px,2vw,16px);
+    margin-bottom:clamp(20px,3vw,30px);
+  }
+
+  .sum-card {
+    background:var(--bg-panel);
+    border:1px solid rgba(61,155,233,0.15);
+    border-radius:10px;
+    padding:clamp(14px,2.5vw,22px) clamp(14px,2vw,20px);
+    position:relative; overflow:hidden;
+    box-shadow:0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .sum-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  }
+  .sum-card.low::before  { background:linear-gradient(90deg,transparent,var(--low),transparent); }
+  .sum-card.mod::before  { background:linear-gradient(90deg,transparent,var(--mod),transparent); }
+  .sum-card.high::before { background:linear-gradient(90deg,transparent,var(--high),transparent); }
+
+  .sum-card-eyebrow {
+    font-family:'Share Tech Mono',monospace;
+    font-size:clamp(8px,1.1vw,10px); letter-spacing:2px; text-transform:uppercase;
+    opacity:.5; margin-bottom:6px;
+  }
+
+  .sum-card-score {
+    font-family:'Rajdhani',sans-serif;
+    font-size:clamp(26px,5vw,42px); font-weight:700; line-height:1;
+  }
+
+  .sum-card-label {
+    font-size:clamp(11px,1.5vw,13px); font-weight:600;
+    margin-top:4px; letter-spacing:.5px;
+  }
+
+  .sum-card-prob {
+    font-family:'Share Tech Mono',monospace;
+    font-size:clamp(9px,1.2vw,11px); opacity:.6; margin-top:3px;
+    letter-spacing:1px;
+  }
+
+  /* ══════════════════════════════
+     FOOTER
+  ══════════════════════════════ */
+  .footer {
+    display:flex; flex-wrap:wrap; gap:8px;
+    align-items:center; justify-content:space-between;
+    padding:clamp(10px,1.8vw,14px) clamp(14px,2.5vw,20px);
+    background:rgba(0,0,0,0.3);
+    border:1px solid rgba(61,155,233,0.1);
+    border-radius:8px; margin-top:4px;
+  }
+
+  .footer-note  { font-family:'Share Tech Mono',monospace; font-size:clamp(8px,1.1vw,10px); color:var(--text-muted); letter-spacing:1px; }
+  .footer-brand { font-family:'Rajdhani',sans-serif; font-size:clamp(10px,1.5vw,13px); color:var(--text-muted); letter-spacing:2px; text-transform:uppercase; }
+
+  /* ══════════════════════════════
+     RESPONSIVE BREAKPOINTS
+  ══════════════════════════════ */
+
+  /* Tablet */
+  @media (max-width: 768px) {
+    .scroll-hint { display:block; }
+
+    .summary-grid { grid-template-columns:repeat(3,1fr); gap:10px; }
+
+    .sum-card-score { font-size:clamp(22px,5vw,32px); }
+
+    .section-desc { display:none; }
+
+    thead th:nth-child(4) { display:none; }
+    td:nth-child(4)       { display:none; }
+  }
+
+  /* Mobile */
+  @media (max-width: 520px) {
+    .summary-grid { grid-template-columns:1fr; gap:10px; }
+
+    .sum-card { display:flex; align-items:center; gap:16px; padding:14px 16px; }
+    .sum-card::before { display:none; }
+    .sum-card-left { border-left:3px solid; padding-left:12px; }
+    .sum-card.low  .sum-card-left { border-color:var(--low); }
+    .sum-card.mod  .sum-card-left { border-color:var(--mod); }
+    .sum-card.high .sum-card-left { border-color:var(--high); }
+
+    .sum-card-score { font-size:28px; }
+
+    thead th:nth-child(4),
+    td:nth-child(4) { display:none; }
+  }
+
+  /* Large desktop */
+  @media (min-width: 1100px) {
+    table { min-width:unset; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <div class="header">
+    <div class="header-eyebrow">Pre-Test Probability · Clinical Decision Tool · Venous Thromboembolism</div>
+    <h1>Wells Score — DVT</h1>
+    <div class="header-sub">Deep Vein Thrombosis Clinical Prediction Rule · Original &amp; Revised Criteria</div>
+    <div class="header-line"></div>
+  </div>
+
+
+  <!-- ═══════════ SUMMARY CARDS ═══════════ -->
+  <div class="summary-grid">
+
+    <div class="sum-card low">
+      <div class="sum-card-left">
+        <div class="sum-card-eyebrow">Score</div>
+        <div class="sum-card-score" style="color:var(--low);">≤ 0</div>
+        <div class="sum-card-label" style="color:var(--low);">Low Probability</div>
+        <div class="sum-card-prob">DVT risk ≈ 5%</div>
+      </div>
+    </div>
+
+    <div class="sum-card mod">
+      <div class="sum-card-left">
+        <div class="sum-card-eyebrow">Score</div>
+        <div class="sum-card-score" style="color:var(--mod);">1 – 2</div>
+        <div class="sum-card-label" style="color:var(--mod);">Moderate Probability</div>
+        <div class="sum-card-prob">DVT risk ≈ 17%</div>
+      </div>
+    </div>
+
+    <div class="sum-card high">
+      <div class="sum-card-left">
+        <div class="sum-card-eyebrow">Score</div>
+        <div class="sum-card-score" style="color:var(--high);">≥ 3</div>
+        <div class="sum-card-label" style="color:var(--high);">High Probability</div>
+        <div class="sum-card-prob">DVT risk ≈ 53%</div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════ SECTION 1 — CLINICAL CRITERIA ═══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s-crit);">
+      <span class="section-letter" style="color:var(--s-crit);">①</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s-crit);">Clinical Criteria &amp; Point Allocation</span>
+        <span class="section-desc">Each variable adds to or subtracts from the cumulative Wells Score · Maximum attainable = 9 points</span>
+      </div>
+    </div>
+
+    <div class="scroll-hint">← scroll →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(90px,12vw,120px)">Points</th>
+          <th style="width:clamp(160px,25vw,230px)">Criterion</th>
+          <th style="width:clamp(80px,12vw,120px)">Category</th>
+          <th>Clinical Definition</th>
+        </tr></thead>
+        <tbody>
+
+          <!-- +1 criteria -->
+          <tr class="sub-divider">
+            <td colspan="4"><span class="sub-divider-label">◆ +1 Point Each — Active Conditions &amp; Physical Signs</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Active Cancer</span><span class="crit-sub">CURRENT OR RECENT TREATMENT</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Oncological</span></td>
+            <td><span class="desc-text">Treatment within past 6 months, or currently receiving palliative care; includes solid tumours and haematological malignancies</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Paralysis / Paresis</span><span class="crit-sub">LOWER LIMB IMMOBILISATION</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Neurological</span></td>
+            <td><span class="desc-text">Paralysis, paresis or recent plaster immobilisation of the lower extremities; any cause reducing calf-muscle pump function</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Bedridden &gt; 3 Days / Surgery</span><span class="crit-sub">RECENT IMMOBILISATION</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Surgical / Immobility</span></td>
+            <td><span class="desc-text">Recently bedridden for ≥3 days OR major surgery within 12 weeks requiring general or regional anaesthesia</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Localised Tenderness</span><span class="crit-sub">DEEP VENOUS SYSTEM</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Physical Sign</span></td>
+            <td><span class="desc-text">Localised tenderness along the distribution of the deep venous system; palpation along posterior calf, popliteal fossa or medial thigh</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Entire Leg Swollen</span><span class="crit-sub">WHOLE LIMB OEDEMA</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Physical Sign</span></td>
+            <td><span class="desc-text">Entire leg is swollen; unilateral swelling extending above the knee; not limited to calf or ankle</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Calf Swelling &gt; 3 cm</span><span class="crit-sub">ASYMMETRIC CALF</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Measurement</span></td>
+            <td><span class="desc-text">Calf swelling &gt;3cm compared to asymptomatic leg; measured 10cm below tibial tuberosity; unilateral asymmetry</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Pitting Oedema</span><span class="crit-sub">SYMPTOMATIC LEG ONLY</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Physical Sign</span></td>
+            <td><span class="desc-text">Pitting oedema confined to the symptomatic leg; unilateral pitting differentiates from bilateral oedema of cardiac or hepatic origin</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Collateral Superficial Veins</span><span class="crit-sub">NON-VARICOSE</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Physical Sign</span></td>
+            <td><span class="desc-text">Collateral superficial veins (non-varicose); dilated superficial veins acting as collateral channels due to deep venous obstruction</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><div class="score-pill" style="color:var(--plus1);border-color:var(--plus1);background:rgba(38,200,126,0.1);">+1</div></td>
+            <td><span class="crit-main">Previous DVT</span><span class="crit-sub">DOCUMENTED HISTORY</span></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">History</span></td>
+            <td><span class="desc-text">Previously documented deep vein thrombosis; confirmed by objective testing (duplex ultrasound or venography) in prior episodes</span></td>
+          </tr>
+
+          <!-- −2 criterion -->
+          <tr class="sub-divider">
+            <td colspan="4"><span class="sub-divider-label">◆ −2 Points — Alternative Diagnosis Considered</span></td>
+          </tr>
+
+          <tr class="stripe-minus2">
+            <td><div class="score-pill" style="color:var(--minus2);border-color:var(--minus2);background:rgba(232,64,64,0.1);">−2</div></td>
+            <td><span class="crit-main">Alternative Diagnosis</span><span class="crit-sub">AS OR MORE LIKELY THAN DVT</span></td>
+            <td><span class="tag" style="background:rgba(232,64,64,0.12);color:var(--minus2);border:1px solid rgba(232,64,64,0.3);">Differential</span></td>
+            <td><span class="desc-text">Alternative diagnosis at least as likely as DVT; e.g., cellulitis, muscle tear, Baker's cyst, superficial thrombophlebitis, post-operative swelling, lymphoedema</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ SECTION 2 — PROBABILITY INTERPRETATION ═══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s-prob);">
+      <span class="section-letter" style="color:var(--s-prob);">②</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s-prob);">Probability Interpretation</span>
+        <span class="section-desc">Score thresholds, DVT prevalence in each band, and two-tier classification for D-dimer pathways</span>
+      </div>
+    </div>
+    <div class="scroll-hint">← scroll →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(80px,12vw,110px)">Score</th>
+          <th style="width:clamp(140px,20vw,180px)">Probability Band</th>
+          <th style="width:clamp(100px,14vw,130px)">DVT Prevalence</th>
+          <th>Interpretation &amp; Notes</th>
+        </tr></thead>
+        <tbody>
+
+          <tr class="stripe-low">
+            <td><div class="score-pill" style="color:var(--low);border-color:var(--low);background:rgba(38,200,126,0.1);">≤ 0</div></td>
+            <td>
+              <div class="prob-wrap">
+                <span class="prob-label" style="color:var(--low);">Low</span>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:10%;background:var(--low);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text" style="color:var(--low);font-weight:600;">~5%</span></td>
+            <td><span class="desc-text">Low pre-test probability; DVT unlikely in majority of patients. If D-dimer negative → DVT excluded without imaging. D-dimer positive → proceed to ultrasound.</span></td>
+          </tr>
+
+          <tr class="stripe-mod">
+            <td><div class="score-pill" style="color:var(--mod);border-color:var(--mod);background:rgba(240,160,48,0.1);">1 – 2</div></td>
+            <td>
+              <div class="prob-wrap">
+                <span class="prob-label" style="color:var(--mod);">Moderate</span>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:38%;background:var(--mod);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text" style="color:var(--mod);font-weight:600;">~17%</span></td>
+            <td><span class="desc-text">Moderate pre-test probability; significant proportion have DVT. D-dimer testing recommended; if elevated or unavailable → duplex ultrasound mandatory.</span></td>
+          </tr>
+
+          <tr class="stripe-high">
+            <td><div class="score-pill" style="color:var(--high);border-color:var(--high);background:rgba(224,64,64,0.1);">≥ 3</div></td>
+            <td>
+              <div class="prob-wrap">
+                <span class="prob-label" style="color:var(--high);">High</span>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:78%;background:var(--high);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text" style="color:var(--high);font-weight:600;">~53%</span></td>
+            <td><span class="desc-text">High pre-test probability; majority of patients have DVT. Proceed directly to duplex ultrasound — do NOT rely on D-dimer alone to exclude diagnosis at this threshold.</span></td>
+          </tr>
+
+          <!-- Two-tier -->
+          <tr class="sub-divider">
+            <td colspan="4"><span class="sub-divider-label">◆ Revised Two-Level / Two-Tier Classification (NICE / SIGN Guideline Adaptation)</span></td>
+          </tr>
+
+          <tr class="stripe-low">
+            <td><div class="score-pill" style="color:var(--low);border-color:var(--low);background:rgba(38,200,126,0.1);font-size:12px;">≤ 1</div></td>
+            <td>
+              <div class="prob-wrap">
+                <span class="prob-label" style="color:var(--low);">DVT Unlikely</span>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:10%;background:var(--low);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text" style="color:var(--low);font-weight:600;">&lt; 17%</span></td>
+            <td><span class="desc-text">Two-tier: DVT unlikely. Perform D-dimer; if negative → no further investigation needed. If positive → proximal leg ultrasound within 4 hours or anticoagulate pending scan.</span></td>
+          </tr>
+
+          <tr class="stripe-high">
+            <td><div class="score-pill" style="color:var(--high);border-color:var(--high);background:rgba(224,64,64,0.1);font-size:12px;">≥ 2</div></td>
+            <td>
+              <div class="prob-wrap">
+                <span class="prob-label" style="color:var(--high);">DVT Likely</span>
+                <div class="prob-bar-bg"><div class="prob-bar-fill" style="width:65%;background:var(--high);"></div></div>
+              </div>
+            </td>
+            <td><span class="desc-text" style="color:var(--high);font-weight:600;">≥ 17%</span></td>
+            <td><span class="desc-text">Two-tier: DVT likely. Arrange proximal leg ultrasound within 4 hours. If unavailable → perform D-dimer &amp; give interim anticoagulation; repeat ultrasound within 24 hours.</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ SECTION 3 — MANAGEMENT PATHWAY ═══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s-mgmt);">
+      <span class="section-letter" style="color:var(--s-mgmt);">③</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s-mgmt);">Diagnostic &amp; Management Pathway</span>
+        <span class="section-desc">Recommended investigations and initial management steps according to Wells probability category</span>
+      </div>
+    </div>
+    <div class="scroll-hint">← scroll →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(80px,12vw,110px)">Score</th>
+          <th style="width:clamp(110px,16vw,150px)">Risk Tier</th>
+          <th style="width:clamp(130px,18vw,170px)">First-Line Investigation</th>
+          <th>Clinical Management Steps</th>
+        </tr></thead>
+        <tbody>
+
+          <tr class="stripe-low">
+            <td><div class="score-pill" style="color:var(--low);border-color:var(--low);background:rgba(38,200,126,0.1);">≤ 0</div></td>
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--low);border:1px solid rgba(38,200,126,0.3);">Low Risk</span></td>
+            <td><span class="desc-text">D-dimer (high-sensitivity)</span></td>
+            <td><span class="desc-text">D-dimer negative → DVT excluded; no anticoagulation. D-dimer positive → proximal duplex ultrasound. Negative ultrasound with low Wells → DVT excluded; no further action.</span></td>
+          </tr>
+
+          <tr class="stripe-mod">
+            <td><div class="score-pill" style="color:var(--mod);border-color:var(--mod);background:rgba(240,160,48,0.1);">1 – 2</div></td>
+            <td><span class="tag" style="background:rgba(240,160,48,0.1);color:var(--mod);border:1px solid rgba(240,160,48,0.3);">Moderate Risk</span></td>
+            <td><span class="desc-text">D-dimer + Duplex Ultrasound</span></td>
+            <td><span class="desc-text">D-dimer and duplex ultrasound in parallel or sequentially. Positive ultrasound → initiate anticoagulation (LMWH or DOAC). Negative ultrasound + negative D-dimer → DVT excluded.</span></td>
+          </tr>
+
+          <tr class="stripe-high">
+            <td><div class="score-pill" style="color:var(--high);border-color:var(--high);background:rgba(224,64,64,0.1);">≥ 3</div></td>
+            <td><span class="tag" style="background:rgba(224,64,64,0.12);color:var(--high);border:1px solid rgba(224,64,64,0.3);">High Risk</span></td>
+            <td><span class="desc-text">Proximal Duplex Ultrasound</span></td>
+            <td><span class="desc-text">Proceed directly to duplex ultrasound; do not delay for D-dimer. Consider empirical anticoagulation while awaiting imaging. Positive → confirm DVT; treat. Negative → repeat in 7 days if clinical suspicion persists.</span></td>
+          </tr>
+
+          <tr class="stripe-accent">
+            <td><div class="score-pill" style="color:var(--accent);border-color:var(--accent);background:rgba(61,155,233,0.1);font-size:11px;">Repeat –ve</div></td>
+            <td><span class="tag" style="background:rgba(61,155,233,0.1);color:var(--accent);border:1px solid rgba(61,155,233,0.3);">Persistent Suspicion</span></td>
+            <td><span class="desc-text">Serial Ultrasound / CT Venography</span></td>
+            <td><span class="desc-text">Initial negative ultrasound with high Wells → repeat duplex at 5–7 days OR consider CT venography / MR venography to evaluate iliac/pelvic veins not accessible to standard ultrasound.</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ SECTION 4 — IMPORTANT NOTES ═══════════ -->
+  <div class="section-block">
+    <div class="section-header" style="border-color:var(--s-score);">
+      <span class="section-letter" style="color:var(--s-score);">④</span>
+      <div class="section-title-wrap">
+        <span class="section-title" style="color:var(--s-score);">Clinical Pearls &amp; Limitations</span>
+        <span class="section-desc">Key considerations when applying the Wells DVT score in clinical practice</span>
+      </div>
+    </div>
+    <div class="scroll-hint">← scroll →</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:clamp(80px,12vw,120px)">Type</th>
+          <th style="width:clamp(160px,22vw,210px)">Point</th>
+          <th>Details</th>
+        </tr></thead>
+        <tbody>
+
+          <tr class="stripe-plus1">
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Pearl</span></td>
+            <td><span class="crit-main">Bilateral DVT</span></td>
+            <td><span class="desc-text">Wells score is designed for unilateral symptomatic leg. Bilateral swelling more likely suggests systemic causes (cardiac failure, hypoalbuminaemia, pelvic mass). Apply score to each leg independently if bilateral symptoms.</span></td>
+          </tr>
+
+          <tr class="stripe-plus1">
+            <td><span class="tag" style="background:rgba(38,200,126,0.1);color:var(--plus1);border:1px solid rgba(38,200,126,0.25);">Pearl</span></td>
+            <td><span class="crit-main">Pregnancy</span></td>
+            <td><span class="desc-text">Wells score has not been validated in pregnancy. D-dimer is physiologically elevated in pregnancy. Duplex ultrasound is the primary investigation; if negative with ongoing suspicion, MR venography is preferred over CT.</span></td>
+          </tr>
+
+          <tr class="stripe-plus2">
+            <td><span class="tag" style="background:rgba(240,192,64,0.1);color:var(--plus2);border:1px solid rgba(240,192,64,0.25);">Caution</span></td>
+            <td><span class="crit-main">On Anticoagulation</span></td>
+            <td><span class="desc-text">Wells score is less reliable in patients already receiving therapeutic anticoagulation for other indications. Perform imaging regardless of score if extending anticoagulation duration is being considered.</span></td>
+          </tr>
+
+          <tr class="stripe-plus2">
+            <td><span class="tag" style="background:rgba(240,192,64,0.1);color:var(--plus2);border:1px solid rgba(240,192,64,0.25);">Caution</span></td>
+            <td><span class="crit-main">Recurrent DVT</span></td>
+            <td><span class="desc-text">Diagnosing recurrent ipsilateral DVT with duplex ultrasound is challenging due to residual thrombus. Comparison with prior ultrasound reports is essential. D-dimer remains useful as a negative predictor even in recurrence.</span></td>
+          </tr>
+
+          <tr class="stripe-minus2">
+            <td><span class="tag" style="background:rgba(232,64,64,0.1);color:var(--minus2);border:1px solid rgba(232,64,64,0.25);">Limitation</span></td>
+            <td><span class="crit-main">Does Not Assess Pelvic Veins</span></td>
+            <td><span class="desc-text">Standard duplex ultrasound and Wells score do not adequately assess iliofemoral and pelvic venous segments. Isolated iliac DVT may present with a low Wells score. CT/MR venography required when pelvic DVT is clinically suspected.</span></td>
+          </tr>
+
+          <tr class="stripe-minus2">
+            <td><span class="tag" style="background:rgba(232,64,64,0.1);color:var(--minus2);border:1px solid rgba(232,64,64,0.25);">Limitation</span></td>
+            <td><span class="crit-main">Subjective Criterion</span></td>
+            <td><span class="desc-text">The "alternative diagnosis as likely" criterion introduces clinician subjectivity. Inter-observer variability has been documented. Score performs best when applied by experienced clinicians with systematic examination. Consider structured documentation.</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <div class="footer">
+    <span class="footer-note">Wells PS et al. Lancet 1997 · Thromb Haemost 2006 · NICE NG158 (2020) · SIGN Guideline 122 · Validated in outpatient &amp; ED settings</span>
+    <span class="footer-brand">Vascular · Haematology Reference</span>
+  </div>
+
+</div>
+</body>
+</html>
